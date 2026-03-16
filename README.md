@@ -22,7 +22,7 @@ The project is implemented as a **stand-alone Java application** and developed u
   * GitHub: [@GuoZihan429](https://github.com/GuoZihan429) 
 * **Yuxin Wang**
   * QMUL ID: 231220770
-  * Github: [@Yuxin-Wang](https://github.com/Yuxin-Wang)
+  * Github: [@Yuxin-Wang5](https://github.com/Yuxin-Wang5)
 
 ## System Users
 
