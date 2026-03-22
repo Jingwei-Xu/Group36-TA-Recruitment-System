@@ -251,9 +251,31 @@ Possible future enhancements include:
 ### Motong Long
 | Date | Member | Location/Branch | Task Description |
 | :--- | :--- | :--- | :--- |
-| 2026-03-14 | @Longmotong |  |  |
+| 2026-03-16 | @Longmotong |Motong-Long/TA_prototype  |Complete the prototype design of the image version  |
+| 2026-03-17 | @Longmotong |Motong-Long/TA_prototype  |Complete the prototype by adding text workflow  |
+| 2026-03-18 | @Longmotong |data  |upload the initial version of the data storage file that the application requires |
+| 2026-03-20 | @Longmotong |Motong-Long/report  |complete the first version of the report writing |
+| 2026-03-20 | @Longmotong |Motong-Long/TA_prototype  |Complete the format modification of the integrated prototype design and the adjustment of the public dashboard section |
+| 2026-03-21 | @Longmotong |Motong-Long/report  |Complete the revision of the report and improve and supplement the supporting materials |
+
+
 
 ### Zihan Guo
 | Date | Member | Location/Branch | Task Description |
 | :--- | :--- | :--- | :--- |
 | 2026-03-14 | @GuoZihan429 |  |  |
+
+### Yifan Cao
+| Date | Member | Location/Branch | Task Description |
+| :--- | :--- | :--- | :--- |
+| 2026-03-17 | @rei129482 |Yifan-Cao/Admin_prototype  |Complete the first version of the interface design  |
+| 2026-03-19 | @rei129482 |Yifan-Cao/Admin_prototype  |Complete the second version of the interface design  |
+| 2026-03-19 | @rei129482 |Yifan-Cao/Admin_prototype  |Complete the final version of the prototype interface design and text description  |
+
+### Yuxin Wang
+| Date | Member | Location/Branch | Task Description |
+| :--- | :--- | :--- | :--- |
+| 2026-03-17 | @Yuxin-Wang5 | Yuxin-Wang/MO_prototype | Complete prototype design ———— prototype-version1.pdf |
+| 2026-03-18 | @Yuxin-Wang5 | Yuxin-Wang/MO_prototype | Add more comprehensive features in prototype design, including: rating TA, one-click quick review, etc. ———— prototype-version2.pdf |
+| 2026-03-19 | @Yuxin-Wang5 | Yuxin-Wang/MO_prototype | Collaborated with another MO team leader to finalize the overall design modifications for the MO system prototype, and completed the drafting and formatting adjustments of the user manual. ———— MO_Application_review_prototype.pdf |
+| 2026-03-22 | @Yuxin-Wang5 | Yuxin-Wang/modify_readme | Proofread the Application Review Module section in the "prototype.pdf" and revise the relevant parts in the readme file. |
