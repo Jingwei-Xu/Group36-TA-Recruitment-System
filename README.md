@@ -26,6 +26,9 @@ The project is implemented as a **stand-alone Java application** and developed u
 * **Yifan Cao** 
   * QMUL ID: 231220987
   * GitHub: [@rei129482](https://github.com/rei129482)
+* **Yifan Lang** 
+  * QMUL ID: 221167711
+  * GitHub: [@ahuo-ahuo](https://github.com/ahuo-ahuo)
 
 ## System Users
 
