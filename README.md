@@ -17,6 +17,18 @@ The project is implemented as a **stand-alone Java application** and developed u
 * **Motong Long** 
   * QMUL ID: 231222095
   * GitHub: [@Longmotong](https://github.com/Longmotong)
+* **Zihan Guo** 
+  * QMUL ID: 231220219
+  * GitHub: [@GuoZihan429](https://github.com/GuoZihan429) 
+* **Yuxin Wang**
+  * QMUL ID: 231220770
+  * Github: [@Yuxin-Wang5](https://github.com/Yuxin-Wang5)
+* **Yifan Cao** 
+  * QMUL ID: 231220987
+  * GitHub: [@rei129482](https://github.com/rei129482)
+* **Yifan Lang** 
+  * QMUL ID: 221167711
+  * GitHub: [@ahuo-ahuo](https://github.com/ahuo-ahuo)
 
 ## System Users
 
@@ -234,9 +246,17 @@ data
 ### Jingwei Xu
 | Date | Member | Location/Branch | Task Description |
 | :--- | :--- | :--- | :--- |
-| 2026-03-14 | @Jingwei-Xu | Jingwei-Xu/docs_questionnaires | The questionnaire content for investigating user requirements has been uploaded |
-| 2026-03-15 | @zhangsan | zhangsan/add_namelist | 你的工作内容描述 |
-| 2026-03-18 | @lisi | lisi/ta_login_ui | 你的工作内容描述 |
+| 2026-03-14 | @Jingwei-Xu | Jingwei-Xu/product-backlog | The questionnaire content for investigating user requirements has been uploaded |
+| 2026-03-16 | @Jingwei-Xu | Jingwei-Xu/TA_prototype | Complete the prototype design of the image version |
+| 2026-03-17 | @Jingwei-Xu | Jingwei-Xu/TA_prototype | Complete the prototype by adding text workflow |
+| 2026-03-20 | @Jingwei-Xu | Jingwei-Xu/TA_prototype | Complete and integrate the first version of the group's overall prototype document and modify the format, adjusting the overall content |
+| 2026-03-20 | @Jingwei-Xu | Jingwei-Xu/product-backlog | Integrate questionnaire results and group survey end user requirements, and complete the TA and MO sections of the Excel document |
+| 2026-03-21 | @Jingwei-Xu | Jingwei-Xu/product-backlog | Complete the Admin sections of the Excel document |
+| 2026-03-22 | @Jingwei-Xu | Jingwei-Xu/product-backlog | Update the final version of Excel document |
+
+
+
+
 
 ### Motong Long
 | Date | Member | Location/Branch | Task Description |
@@ -250,7 +270,28 @@ data
 
 
 
+### Zihan Guo
+| Date | Member | Location/Branch | Task Description |
+| :--- | :--- | :--- | :--- |
+| 2026-03-17 | @GuoZihan429 | Zihan-Guo/MO_prototype | Complete the first version of the MO prototype |
+| 2026-03-18 | @GuoZihan429 | Zihan-Guo/MO_prototype | Improve the first version prototype and add user manual to the image |
+| 2026-03-19 | @GuoZihan429 | Zihan-Guo/MO_prototype | Integrate with another MO teammate and then design the MO dashboard |
+| 2026-03-20 | @GuoZihan429 | Zihan-Guo/MO_prototype | Refine the final version based on the questionnaire results and merge it into main |
 
+### Yifan Cao
+| Date | Member | Location/Branch | Task Description |
+| :--- | :--- | :--- | :--- |
+| 2026-03-17 | @rei129482 |Yifan-Cao/Admin_prototype  |Complete the first version of the interface design  |
+| 2026-03-19 | @rei129482 |Yifan-Cao/Admin_prototype  |Complete the second version of the interface design  |
+| 2026-03-19 | @rei129482 |Yifan-Cao/Admin_prototype  |Complete the final version of the prototype interface design and text description  |
+
+### Yuxin Wang
+| Date | Member | Location/Branch | Task Description |
+| :--- | :--- | :--- | :--- |
+| 2026-03-17 | @Yuxin-Wang5 | Yuxin-Wang/MO_prototype | Complete prototype design ———— prototype-version1.pdf |
+| 2026-03-18 | @Yuxin-Wang5 | Yuxin-Wang/MO_prototype | Add more comprehensive features in prototype design, including: rating TA, one-click quick review, etc. ———— prototype-version2.pdf |
+| 2026-03-19 | @Yuxin-Wang5 | Yuxin-Wang/MO_prototype | Collaborated with another MO team leader to finalize the overall design modifications for the MO system prototype, and completed the drafting and formatting adjustments of the user manual. ———— MO_Application_review_prototype.pdf |
+| 2026-03-22 | @Yuxin-Wang5 | Yuxin-Wang/modify_readme | Proofread the Application Review Module section in the "prototype.pdf" and revise the relevant parts in the readme file. |
 
 ## How to Run the System
 
