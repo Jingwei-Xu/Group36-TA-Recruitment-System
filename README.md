@@ -185,50 +185,30 @@ data
 └── applications.json
 ```
 
-## Development Workflow
+## Iteration Progress
 
-The project follows a **feature branch workflow**.
+### Iteration 1
+#### Planned goals
+#### Completed features
+#### Issues and reflections
 
-Main branch:main
+### Iteration 2
+#### Planned goals
+#### Completed features
+#### Issues and reflections
 
-Feature branches:
-feature-auth-navigation
-feature-ta-profile
-feature-ta-application
-feature-mo-job
-feature-mo-review
-feature-admin
+### Iteration 3
+#### Planned goals
+#### Completed features
+#### Issues and reflections
 
-The **main branch always contains the latest integrated and runnable version of the system**.
-
----
-
-## How to Run the System
-
-1. Clone the repository
-```
-git clone repository-url
-```
-
-3. Open the project using an IDE such as **IntelliJ IDEA** or **Eclipse**
-
-4. Run the main program
-```
-MainApp.java
-```
-
-6. Follow the instructions displayed in the program.
+### Iteration 4
+#### Planned goals
+#### Completed features
+#### Issues and reflections
 
 ---
 
-## Future Improvements
-
-Possible future enhancements include:
-
-- AI-based job recommendation
-- Skill gap analysis
-- Automatic workload balancing
-- Improved UI design
 
 ## Work Log
 
@@ -252,3 +232,24 @@ Possible future enhancements include:
 
 
 
+## How to Run the System
+
+1. Clone the repository
+```
+git clone repository-url
+```
+
+3. Open the project using an IDE such as **IntelliJ IDEA** or **Eclipse**
+
+4. Run the main program
+
+
+
+## Future Improvements
+
+Possible future enhancements include:
+
+- AI-based job recommendation
+- Skill gap analysis
+- Automatic workload balancing
+- Improved UI design
