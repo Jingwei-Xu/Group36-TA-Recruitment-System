@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -37,17 +38,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreateJobFrame extends JFrame {
-    private static final Color PAGE_BG = new Color(248, 250, 252);
-    private static final Color BORDER = new Color(226, 232, 240);
-    private static final Color TEXT_MAIN = new Color(15, 23, 42);
-    private static final Color TEXT_SUB = new Color(100, 116, 139);
-    private static final Color PRIMARY = new Color(3, 2, 19);
-    private static final Color CARD_BG = Color.WHITE;
-
     private static final int LABEL_WIDTH = 200;
 
     private final MyJobsFrame parentFrame;
     private final JobRepository jobRepository;
+    private final Job editingJob;
+
+    private JLabel formTitleLabel;
+    private JLabel formSubtitleLabel;
 
     private final JTextField titleField = new JTextField();
     private final JTextField moduleCodeField = new JTextField();
@@ -72,21 +70,50 @@ public class CreateJobFrame extends JFrame {
     private final List<String> skills = new ArrayList<>();
 
     public CreateJobFrame(MyJobsFrame parentFrame, JobRepository jobRepository) {
+        this(parentFrame, jobRepository, null);
+    }
+
+    public CreateJobFrame(MyJobsFrame parentFrame, JobRepository jobRepository, Job editingJob) {
         this.parentFrame = parentFrame;
         this.jobRepository = jobRepository;
+        this.editingJob = editingJob;
 
-        setTitle("MO Job System - Create New Job");
+        setTitle(editingJob == null ? "MO System - Create New Job" : "MO System - Edit Job");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(960, 940);
-        setMinimumSize(new Dimension(880, 700));
-        setLocationRelativeTo(parentFrame);
-        getContentPane().setBackground(PAGE_BG);
+        MoFrameGeometry.applyMatching(parentFrame, this);
+        getContentPane().setBackground(MoUiTheme.PAGE_BG);
         setLayout(new BorderLayout());
 
-        add(NavigationPanel.create(NavigationPanel.Tab.JOB_MANAGEMENT), BorderLayout.NORTH);
-        add(buildScrollContent(), BorderLayout.CENTER);
+        add(NavigationPanel.create(NavigationPanel.Tab.JOB_MANAGEMENT, navActions()), BorderLayout.NORTH);
+
+        JPanel main = new JPanel(new BorderLayout());
+        main.setOpaque(false);
+        main.setBackground(MoUiTheme.PAGE_BG);
+        main.add(buildPageHeaderStrip(), BorderLayout.NORTH);
+        main.add(buildFormScrollPane(), BorderLayout.CENTER);
+        JPanel south = new JPanel(new BorderLayout());
+        south.setOpaque(false);
+        south.setBackground(MoUiTheme.PAGE_BG);
+        south.setBorder(new EmptyBorder(12, 40, 32, 40));
+        south.add(buildActionBar(), BorderLayout.CENTER);
+        main.add(south, BorderLayout.SOUTH);
+        add(main, BorderLayout.CENTER);
 
         styleInputs();
+        if (editingJob != null) {
+            populateFromJob(editingJob);
+            publishImmediatelyCheck.setSelected(!"Draft".equalsIgnoreCase(editingJob.getStatus()));
+            updateSubmitLabel();
+        }
+    }
+
+    private NavigationPanel.Actions navActions() {
+        return new NavigationPanel.Actions(
+                () -> MoFrameGeometry.navigateReplace(this, () -> new MoDashboardFrame().setVisible(true)),
+                () -> MoFrameGeometry.navigateReplace(this, () -> new MyJobsFrame().setVisible(true)),
+                () -> MoFrameGeometry.navigateReplace(this, () -> new ApplicationReviewPlaceholderFrame(null).setVisible(true)),
+                () -> System.exit(0)
+        );
     }
 
     private void styleInputs() {
@@ -97,7 +124,7 @@ public class CreateJobFrame extends JFrame {
         }) {
             f.setFont(fieldFont);
             f.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(BORDER),
+                    BorderFactory.createLineBorder(MoUiTheme.BORDER),
                     new EmptyBorder(10, 12, 10, 12)
             ));
         }
@@ -105,25 +132,23 @@ public class CreateJobFrame extends JFrame {
         employmentCombo.setFont(fieldFont);
         descriptionArea.setFont(fieldFont);
         descriptionArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER),
+                BorderFactory.createLineBorder(MoUiTheme.BORDER),
                 new EmptyBorder(10, 12, 10, 12)
         ));
         additionalArea.setFont(fieldFont);
         additionalArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER),
+                BorderFactory.createLineBorder(MoUiTheme.BORDER),
                 new EmptyBorder(10, 12, 10, 12)
         ));
         deadlineField.setToolTipText("Deadline yyyy-MM-dd (optional; default +2 weeks in index if empty)");
     }
 
-    private JScrollPane buildScrollContent() {
+    /** Scrollable form only; header + action bar stay fixed for predictable layout. */
+    private JScrollPane buildFormScrollPane() {
         JPanel root = new JPanel();
         root.setLayout(new BoxLayout(root, BoxLayout.Y_AXIS));
-        root.setBackground(PAGE_BG);
-        root.setBorder(new EmptyBorder(0, 0, 32, 0));
-
-        root.add(buildPageHeaderStrip());
-        root.add(Box.createVerticalStrut(20));
+        root.setBackground(MoUiTheme.PAGE_BG);
+        root.setBorder(new EmptyBorder(12, 0, 24, 0));
 
         JPanel gutter = new JPanel(new BorderLayout());
         gutter.setOpaque(false);
@@ -139,15 +164,14 @@ public class CreateJobFrame extends JFrame {
         inner.add(buildCard("Detailed Requirements", buildDetailedSection()));
         inner.add(Box.createVerticalStrut(18));
         inner.add(buildCard("Publish Settings", buildPublishSection()));
-        inner.add(Box.createVerticalStrut(28));
-        inner.add(buildActionBar());
 
         gutter.add(inner, BorderLayout.CENTER);
         root.add(gutter);
 
         JScrollPane scroll = new JScrollPane(root);
         scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.getViewport().setBackground(PAGE_BG);
+        scroll.getViewport().setBackground(MoUiTheme.PAGE_BG);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
         return scroll;
     }
 
@@ -156,7 +180,7 @@ public class CreateJobFrame extends JFrame {
         strip.setLayout(new BoxLayout(strip, BoxLayout.Y_AXIS));
         strip.setBackground(Color.WHITE);
         strip.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER),
+                BorderFactory.createMatteBorder(0, 0, 1, 0, MoUiTheme.BORDER),
                 new EmptyBorder(18, 40, 20, 40)
         ));
 
@@ -164,39 +188,41 @@ public class CreateJobFrame extends JFrame {
         back.setFocusPainted(false);
         back.setContentAreaFilled(false);
         back.setBorder(new EmptyBorder(6, 4, 6, 4));
-        back.setForeground(TEXT_SUB);
-        back.setAlignmentX(LEFT_ALIGNMENT);
+        back.setForeground(MoUiTheme.TEXT_SECONDARY);
+        back.setAlignmentX(Component.LEFT_ALIGNMENT);
         back.addActionListener(e -> dispose());
         strip.add(back);
         strip.add(Box.createVerticalStrut(10));
 
-        JLabel title = new JLabel("Create New Job");
-        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 26));
-        title.setForeground(TEXT_MAIN);
-        title.setAlignmentX(LEFT_ALIGNMENT);
-        strip.add(title);
+        formTitleLabel = new JLabel(editingJob == null ? "Create New Job" : "Edit Job");
+        formTitleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 26));
+        formTitleLabel.setForeground(MoUiTheme.TEXT_PRIMARY);
+        formTitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        strip.add(formTitleLabel);
         strip.add(Box.createVerticalStrut(6));
 
-        JLabel subtitle = new JLabel("Fill in the details to create a new TA recruitment position");
-        subtitle.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-        subtitle.setForeground(TEXT_SUB);
-        subtitle.setAlignmentX(LEFT_ALIGNMENT);
-        strip.add(subtitle);
+        formSubtitleLabel = new JLabel(editingJob == null
+                ? "Fill in the details to create a new TA recruitment position"
+                : "Update posting details — changes apply to this job record");
+        formSubtitleLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        formSubtitleLabel.setForeground(MoUiTheme.TEXT_SECONDARY);
+        formSubtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        strip.add(formSubtitleLabel);
 
         return strip;
     }
 
     private JPanel buildCard(String title, JPanel body) {
         JPanel card = new JPanel(new BorderLayout(0, 14));
-        card.setBackground(CARD_BG);
+        card.setBackground(MoUiTheme.SURFACE);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER),
+                BorderFactory.createLineBorder(MoUiTheme.BORDER),
                 new EmptyBorder(20, 22, 22, 22)
         ));
 
         JLabel heading = new JLabel(title);
         heading.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        heading.setForeground(TEXT_MAIN);
+        heading.setForeground(MoUiTheme.TEXT_PRIMARY);
         card.add(heading, BorderLayout.NORTH);
         card.add(body, BorderLayout.CENTER);
         return card;
@@ -229,7 +255,7 @@ public class CreateJobFrame extends JFrame {
         addLabeledFullWidth(grid, g, row++, fieldLabel("Department"), departmentField);
         addLabeledFullWidth(grid, g, row++, fieldLabel("Instructor name"), instructorNameField);
         addLabeledFullWidth(grid, g, row++, fieldLabel("Instructor email"), instructorEmailField);
-        addLabeledFullWidth(grid, g, row++, fieldLabel("Application deadline (yyyy-MM-dd)"), deadlineField);
+        addLabeledFullWidth(grid, g, row++, fieldLabel("Application deadline"), deadlineField);
 
         g.gridx = 0;
         g.gridy = row;
@@ -414,19 +440,19 @@ public class CreateJobFrame extends JFrame {
             final String skillKey = skill;
             JPanel chip = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
             chip.setOpaque(true);
-            chip.setBackground(new Color(241, 245, 249));
+            chip.setBackground(MoUiTheme.BORDER_SOFT);
             chip.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(226, 232, 240)),
+                    BorderFactory.createLineBorder(MoUiTheme.BORDER),
                     new EmptyBorder(4, 10, 4, 6)
             ));
             JLabel text = new JLabel(skillKey);
             text.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-            text.setForeground(TEXT_MAIN);
+            text.setForeground(MoUiTheme.TEXT_PRIMARY);
             JButton remove = new JButton("×");
             remove.setFocusPainted(false);
             remove.setContentAreaFilled(false);
             remove.setBorder(new EmptyBorder(0, 4, 0, 0));
-            remove.setForeground(TEXT_SUB);
+            remove.setForeground(MoUiTheme.TEXT_SECONDARY);
             remove.addActionListener(e -> {
                 skills.remove(skillKey);
                 redrawSkillChips();
@@ -464,7 +490,36 @@ public class CreateJobFrame extends JFrame {
     }
 
     private void updateSubmitLabel() {
+        if (editingJob != null) {
+            submitButton.setText("Save Changes");
+            return;
+        }
         submitButton.setText(publishImmediatelyCheck.isSelected() ? "Publish Job" : "Save as Draft");
+    }
+
+    private void populateFromJob(Job j) {
+        titleField.setText(j.getTitle());
+        moduleCodeField.setText(j.getModuleCode());
+        moduleNameField.setText(j.getModuleName());
+        quotaField.setText(String.valueOf(j.getQuota()));
+        weeklyHoursField.setText(String.valueOf(j.getWeeklyHours()));
+        departmentField.setText(j.getDepartment());
+        instructorNameField.setText(j.getInstructorName());
+        instructorEmailField.setText(j.getInstructorEmail());
+        deadlineField.setText(j.getDeadline());
+        locationCombo.setSelectedItem(j.getLocationMode());
+        employmentCombo.setSelectedItem(j.getEmploymentType());
+        descriptionArea.setText(j.getDescription());
+        additionalArea.setText(j.getAdditionalRequirements());
+        skills.clear();
+        if (j.getRequiredSkills() != null) {
+            skills.addAll(j.getRequiredSkills());
+        }
+        redrawSkillChips();
+        if (formTitleLabel != null) {
+            formTitleLabel.setText("Edit Job");
+            formSubtitleLabel.setText("Update posting details — changes apply to this job record");
+        }
     }
 
     private JPanel buildActionBar() {
@@ -475,14 +530,16 @@ public class CreateJobFrame extends JFrame {
 
         JButton cancel = new JButton("Cancel");
         cancel.setFocusPainted(false);
+        MoUiTheme.styleOutlineButton(cancel, 8);
         cancel.addActionListener(e -> dispose());
         right.add(cancel);
 
-        submitButton.setBackground(PRIMARY);
-        submitButton.setForeground(Color.WHITE);
+        MoUiTheme.stylePrimaryButton(submitButton, 8);
         submitButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
         submitButton.setFocusPainted(false);
         submitButton.setBorder(new EmptyBorder(10, 20, 10, 20));
+        int sh = Math.max(42, submitButton.getPreferredSize().height);
+        submitButton.setMinimumSize(new Dimension(0, sh));
         submitButton.addActionListener(e -> submitForm());
         right.add(submitButton);
 
@@ -494,19 +551,19 @@ public class CreateJobFrame extends JFrame {
     private static JLabel fieldLabel(String text) {
         JLabel l = new JLabel(text);
         l.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-        l.setForeground(TEXT_MAIN);
+        l.setForeground(MoUiTheme.TEXT_PRIMARY);
         return l;
     }
 
     private static JLabel requiredFieldLabel(String text) {
         return new JLabel("<html><body style='width:" + LABEL_WIDTH + "px'>" + text
-                + " <font color='#dc2626'>*</font></body></html>");
+                + " <font color='#333333'>*</font></body></html>");
     }
 
     private static JLabel hintLabel(String text) {
         JLabel l = new JLabel(text);
         l.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        l.setForeground(TEXT_SUB);
+        l.setForeground(MoUiTheme.TEXT_SECONDARY);
         return l;
     }
 
@@ -558,38 +615,79 @@ public class CreateJobFrame extends JFrame {
             }
         }
 
-        List<Job> existing = jobRepository.loadAllJobs();
         int year = Year.now().getValue();
-        String canonicalId = JobIdGenerator.nextId(moduleCode, year, "spring", existing);
+        if (editingJob != null) {
+            Job job = new Job();
+            job.setId(editingJob.getId());
+            job.setTitle(title);
+            job.setModuleCode(moduleCode);
+            job.setModuleName(moduleName);
+            job.setQuota(quota);
+            job.setWeeklyHours(weeklyHours);
+            job.setDepartment(departmentField.getText().trim().isEmpty()
+                    ? "Computer Science"
+                    : departmentField.getText().trim());
+            job.setInstructorName(instructorNameField.getText().trim());
+            job.setInstructorEmail(instructorEmailField.getText().trim().isEmpty()
+                    ? "mo@university.edu"
+                    : instructorEmailField.getText().trim());
+            job.setDeadline(deadlineStr);
+            job.setLocationMode(String.valueOf(locationCombo.getSelectedItem()));
+            job.setEmploymentType(String.valueOf(employmentCombo.getSelectedItem()));
+            job.setCourseTerm(editingJob.getCourseTerm());
+            job.setCourseYear(editingJob.getCourseYear() > 0 ? editingJob.getCourseYear() : year);
+            job.setDescription(descriptionArea.getText().trim());
+            job.setAdditionalRequirements(additionalArea.getText().trim());
+            job.setRequiredSkills(new ArrayList<>(skills));
+            job.setApplicantsCount(editingJob.getApplicantsCount());
+            job.setStatus(publishImmediatelyCheck.isSelected() ? "Open" : "Draft");
 
-        Job job = new Job();
-        job.setId(canonicalId);
-        job.setTitle(title);
-        job.setModuleCode(moduleCode);
-        job.setModuleName(moduleName);
-        job.setQuota(quota);
-        job.setWeeklyHours(weeklyHours);
-        job.setDepartment(departmentField.getText().trim().isEmpty()
-                ? "Computer Science"
-                : departmentField.getText().trim());
-        job.setInstructorName(instructorNameField.getText().trim());
-        job.setInstructorEmail(instructorEmailField.getText().trim().isEmpty()
-                ? "mo@university.edu"
-                : instructorEmailField.getText().trim());
-        job.setDeadline(deadlineStr);
-        job.setLocationMode(String.valueOf(locationCombo.getSelectedItem()));
-        job.setEmploymentType(String.valueOf(employmentCombo.getSelectedItem()));
-        job.setCourseTerm("Spring");
-        job.setCourseYear(year);
-        job.setDescription(descriptionArea.getText().trim());
-        job.setAdditionalRequirements(additionalArea.getText().trim());
-        job.setRequiredSkills(new ArrayList<>(skills));
-        job.setApplicantsCount(0);
-        job.setStatus(publishImmediatelyCheck.isSelected() ? "Open" : "Draft");
+            List<Job> all = new ArrayList<>(jobRepository.loadAllJobs());
+            boolean replaced = false;
+            for (int i = 0; i < all.size(); i++) {
+                if (job.getId().equals(all.get(i).getId())) {
+                    all.set(i, job);
+                    replaced = true;
+                    break;
+                }
+            }
+            if (!replaced) {
+                all.add(job);
+            }
+            jobRepository.saveAllJobs(all);
+        } else {
+            List<Job> existing = jobRepository.loadAllJobs();
+            String canonicalId = JobIdGenerator.nextId(moduleCode, year, "spring", existing);
 
-        List<Job> jobs = new ArrayList<>(existing);
-        jobs.add(job);
-        jobRepository.saveAllJobs(jobs);
+            Job job = new Job();
+            job.setId(canonicalId);
+            job.setTitle(title);
+            job.setModuleCode(moduleCode);
+            job.setModuleName(moduleName);
+            job.setQuota(quota);
+            job.setWeeklyHours(weeklyHours);
+            job.setDepartment(departmentField.getText().trim().isEmpty()
+                    ? "Computer Science"
+                    : departmentField.getText().trim());
+            job.setInstructorName(instructorNameField.getText().trim());
+            job.setInstructorEmail(instructorEmailField.getText().trim().isEmpty()
+                    ? "mo@university.edu"
+                    : instructorEmailField.getText().trim());
+            job.setDeadline(deadlineStr);
+            job.setLocationMode(String.valueOf(locationCombo.getSelectedItem()));
+            job.setEmploymentType(String.valueOf(employmentCombo.getSelectedItem()));
+            job.setCourseTerm("Spring");
+            job.setCourseYear(year);
+            job.setDescription(descriptionArea.getText().trim());
+            job.setAdditionalRequirements(additionalArea.getText().trim());
+            job.setRequiredSkills(new ArrayList<>(skills));
+            job.setApplicantsCount(0);
+            job.setStatus(publishImmediatelyCheck.isSelected() ? "Open" : "Draft");
+
+            List<Job> jobs = new ArrayList<>(existing);
+            jobs.add(job);
+            jobRepository.saveAllJobs(jobs);
+        }
 
         parentFrame.reloadJobsFromRepository();
         dispose();

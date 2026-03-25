@@ -1,5 +1,7 @@
 package com.mojobsystem.ui;
 
+import com.formdev.flatlaf.FlatClientProperties;
+import com.mojobsystem.MoContext;
 import com.mojobsystem.model.Job;
 import com.mojobsystem.repository.JobRepository;
 
@@ -25,116 +27,180 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Insets;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import javax.swing.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class MyJobsFrame extends JFrame {
-    private static final Color PAGE_BG = new Color(248, 250, 252);
-    private static final Color BORDER = new Color(226, 232, 240);
-    private static final Color TEXT_MAIN = new Color(15, 23, 42);
-    private static final Color TEXT_SUB = new Color(100, 116, 139);
-    private static final Color PRIMARY = new Color(3, 2, 19);
+    /** Softer than default LAF selection — avoids harsh blue + keeps text readable. */
+    private static final Color TABLE_SELECTION_BG = new Color(0xD9E7FF);
+    private static final Color TABLE_SELECTION_FG = new Color(0x111827);
 
     private final JobRepository jobRepository;
     private final JobTableModel tableModel;
 
     public MyJobsFrame() {
         this.jobRepository = new JobRepository();
-        this.tableModel = new JobTableModel(jobRepository.loadAllJobs());
+        this.tableModel = new JobTableModel(jobRepository.loadJobsForMo(MoContext.CURRENT_MO_ID));
 
-        setTitle("MO Job System - My Jobs");
+        setTitle("MO System - My Jobs");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1220, 700);
-        setLocationRelativeTo(null);
+        MoFrameGeometry.apply(this);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(PAGE_BG);
+        getContentPane().setBackground(MoUiTheme.PAGE_BG);
 
-        add(NavigationPanel.create(NavigationPanel.Tab.JOB_MANAGEMENT), BorderLayout.NORTH);
+        add(NavigationPanel.create(NavigationPanel.Tab.JOB_MANAGEMENT, navActions()), BorderLayout.NORTH);
         add(buildMainContent(), BorderLayout.CENTER);
     }
 
+    private NavigationPanel.Actions navActions() {
+        return new NavigationPanel.Actions(
+                () -> MoFrameGeometry.navigateReplace(this, () -> new MoDashboardFrame().setVisible(true)),
+                () -> { },
+                () -> MoFrameGeometry.navigateReplace(this, () -> new ApplicationReviewPlaceholderFrame(null).setVisible(true)),
+                () -> System.exit(0)
+        );
+    }
+
     public void reloadJobsFromRepository() {
-        tableModel.replaceJobs(jobRepository.loadAllJobs());
+        tableModel.replaceJobs(jobRepository.loadJobsForMo(MoContext.CURRENT_MO_ID));
     }
 
     private JPanel buildMainContent() {
-        JPanel panel = new JPanel(new BorderLayout(0, 20));
+        JPanel panel = new JPanel(new BorderLayout(0, 18));
         panel.setOpaque(false);
-        panel.setBorder(new EmptyBorder(28, 40, 32, 40));
+        panel.setBorder(new EmptyBorder(24, MoUiTheme.GUTTER, 28, MoUiTheme.GUTTER));
 
-        JPanel header = new JPanel(new BorderLayout());
-        header.setOpaque(false);
         JPanel leftHeader = new JPanel();
         leftHeader.setLayout(new BoxLayout(leftHeader, BoxLayout.Y_AXIS));
         leftHeader.setOpaque(false);
 
         JLabel title = new JLabel("My Jobs");
-        title.setForeground(TEXT_MAIN);
-        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 38));
+        title.setForeground(MoUiTheme.TEXT_PRIMARY);
+        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 36));
         JLabel subtitle = new JLabel("Manage your TA recruitment positions");
-        subtitle.setForeground(TEXT_SUB);
-        subtitle.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+        subtitle.setForeground(MoUiTheme.TEXT_SECONDARY);
+        subtitle.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
 
         leftHeader.add(title);
-        leftHeader.add(Box.createVerticalStrut(4));
+        leftHeader.add(Box.createVerticalStrut(6));
         leftHeader.add(subtitle);
-        header.add(leftHeader, BorderLayout.WEST);
 
         JButton createNewJobButton = new JButton("+  Create New Job");
-        createNewJobButton.setPreferredSize(new Dimension(166, 40));
-        createNewJobButton.setBackground(PRIMARY);
-        createNewJobButton.setForeground(Color.WHITE);
         createNewJobButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
         createNewJobButton.setFocusPainted(false);
-        createNewJobButton.setBorder(new EmptyBorder(8, 14, 8, 14));
+        MoUiTheme.styleAccentPrimaryButton(createNewJobButton, 10);
+        createNewJobButton.setPreferredSize(new Dimension(200, 42));
         createNewJobButton.addActionListener(e -> {
             CreateJobFrame createFrame = new CreateJobFrame(this, jobRepository);
             createFrame.setVisible(true);
         });
-        header.add(createNewJobButton, BorderLayout.EAST);
 
-        panel.add(header, BorderLayout.NORTH);
+        JPanel headerCard = new JPanel(new BorderLayout(28, 0));
+        headerCard.setOpaque(true);
+        headerCard.setBackground(MoUiTheme.SURFACE);
+        headerCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0xE8EAEF)),
+                new EmptyBorder(18, 22, 18, 22)
+        ));
+        headerCard.putClientProperty(FlatClientProperties.STYLE, "arc: 12");
+        headerCard.add(leftHeader, BorderLayout.CENTER);
+        headerCard.add(createNewJobButton, BorderLayout.EAST);
+
+        panel.add(headerCard, BorderLayout.NORTH);
         panel.add(buildJobsTablePane(), BorderLayout.CENTER);
         return panel;
     }
 
     private JScrollPane buildJobsTablePane() {
         JTable table = new JTable(tableModel);
-        table.setRowHeight(56);
+        table.setRowHeight(64);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setSelectionBackground(TABLE_SELECTION_BG);
+        table.setSelectionForeground(TABLE_SELECTION_FG);
         table.getTableHeader().setReorderingAllowed(false);
         table.setShowVerticalLines(false);
-        table.setGridColor(BORDER);
+        table.setGridColor(MoUiTheme.BORDER);
         table.setBackground(Color.WHITE);
-        table.setForeground(TEXT_MAIN);
+        table.setForeground(MoUiTheme.TEXT_PRIMARY);
         table.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
         table.getTableHeader().setBackground(Color.WHITE);
-        table.getTableHeader().setForeground(TEXT_MAIN);
+        table.getTableHeader().setForeground(MoUiTheme.TEXT_PRIMARY);
         table.getTableHeader().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER));
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MoUiTheme.BORDER));
 
+        // Ensure default renderers (columns without custom renderers) paint selection background fully.
+        table.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(t, value, isSelected, hasFocus, row, column);
+                c.setBackground(isSelected ? t.getSelectionBackground() : t.getBackground());
+                c.setForeground(isSelected ? TABLE_SELECTION_FG : t.getForeground());
+                if (c instanceof javax.swing.JLabel lbl) {
+                    lbl.setOpaque(true);
+                }
+                return c;
+            }
+        });
+
+        table.getColumnModel().getColumn(0).setCellRenderer(new JobTitleCellRenderer());
         table.getColumnModel().getColumn(1).setCellRenderer(new ModuleCellRenderer());
         table.getColumnModel().getColumn(3).setCellRenderer(new StatusCellRenderer());
         table.getColumnModel().getColumn(5).setCellRenderer(new ActionsCellRenderer());
         table.getColumnModel().getColumn(5).setCellEditor(new ActionsCellEditor());
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(220);
+        table.getColumnModel().getColumn(0).setPreferredWidth(280);
         table.getColumnModel().getColumn(1).setPreferredWidth(260);
         table.getColumnModel().getColumn(2).setPreferredWidth(120);
-        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(104);
         table.getColumnModel().getColumn(4).setPreferredWidth(110);
-        table.getColumnModel().getColumn(5).setPreferredWidth(280);
+        table.getColumnModel().getColumn(5).setPreferredWidth(320);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(Color.WHITE);
-        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER));
+        scrollPane.setBorder(BorderFactory.createLineBorder(MoUiTheme.BORDER));
         return scrollPane;
+    }
+    private static class JobTitleCellRenderer extends JLabel implements TableCellRenderer {
+        JobTitleCellRenderer() {
+            setOpaque(true);
+            setBorder(new EmptyBorder(0, 0, 0, 0));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column) {
+            String title = String.valueOf(value);
+            setToolTipText(title); // always allow full title via hover
+            // Two-line wrap within a reasonable width to avoid truncation.
+            setText("<html><div style='width:250px;line-height:1.25'><span style='font-weight:700;color:#111827'>"
+                    + escapeHtml(title)
+                    + "</span></div></html>");
+            setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+            setForeground(isSelected ? TABLE_SELECTION_FG : MoUiTheme.TEXT_PRIMARY);
+            return this;
+        }
+
+        private static String escapeHtml(String s) {
+            if (s == null) {
+                return "";
+            }
+            return s.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;");
+        }
     }
 
     private void persistJobs() {
-        jobRepository.saveAllJobs(tableModel.getJobs());
+        jobRepository.saveJobsForMo(MoContext.CURRENT_MO_ID, tableModel.getJobs());
     }
 
     private static String normalizeStatus(String status) {
@@ -149,6 +215,18 @@ public class MyJobsFrame extends JFrame {
             return "Draft";
         }
         return "Open";
+    }
+
+    private void refreshActionIconsForRow(int row, JButton editButton, JButton toggleButton, JButton deleteButton) {
+        if (row < 0 || row >= tableModel.getRowCount()) {
+            return;
+        }
+        Job job = tableModel.getJobAt(row);
+        editButton.setIcon(MoActionIcons.editJobBlue());
+        deleteButton.setIcon(MoActionIcons.deleteJobRed());
+        boolean open = job != null && "Open".equalsIgnoreCase(normalizeStatus(job.getStatus()));
+        toggleButton.setIcon(MoActionIcons.toggleSwitch(open));
+        toggleButton.setToolTipText(open ? "Mark job as closed" : "Mark job as open");
     }
 
     private class JobTableModel extends AbstractTableModel {
@@ -180,6 +258,11 @@ public class MyJobsFrame extends JFrame {
         @Override
         public String getColumnName(int column) {
             return columns[column];
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 5;
         }
 
         @Override
@@ -223,9 +306,11 @@ public class MyJobsFrame extends JFrame {
             String moduleCode = parts.length > 0 ? parts[0] : "";
             String moduleName = parts.length > 1 ? parts[1] : "";
 
-            setText("<html><div style='line-height:1.25'><span style='font-weight:700;color:#0f172a'>"
+            String codeColor = isSelected ? "#111827" : "#000000";
+            String nameColor = isSelected ? "#4B5563" : "#666666";
+            setText("<html><div style='line-height:1.25'><span style='font-weight:700;color:" + codeColor + "'>"
                     + moduleCode
-                    + "</span><br/><span style='color:#64748b'>"
+                    + "</span><br/><span style='color:" + nameColor + "'>"
                     + moduleName
                     + "</span></div></html>");
             setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
@@ -233,12 +318,32 @@ public class MyJobsFrame extends JFrame {
         }
     }
 
-    private static class StatusCellRenderer extends JLabel implements TableCellRenderer {
+    /**
+     * Compact centered pill — does not stretch to full row height; cell uses soft selection tint.
+     */
+    private static class StatusCellRenderer extends JPanel implements TableCellRenderer {
+        private static final Color OPEN_BG = new Color(0xDCFCE7);
+        private static final Color OPEN_FG = new Color(0x166534);
+        private static final Color CLOSED_BG = new Color(0xE0E7FF);
+        private static final Color CLOSED_FG = new Color(0x3730A3);
+        private static final Color DRAFT_BG = new Color(0xFFFBEB);
+        private static final Color DRAFT_FG = new Color(0x92400E);
+
+        private final JLabel pill = new JLabel();
+
         StatusCellRenderer() {
+            super(new GridBagLayout());
             setOpaque(true);
-            setHorizontalAlignment(SwingConstants.CENTER);
-            setBorder(new EmptyBorder(6, 10, 6, 10));
-            setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+            pill.setOpaque(true);
+            pill.setHorizontalAlignment(SwingConstants.CENTER);
+            pill.setVerticalAlignment(SwingConstants.CENTER);
+            pill.setBorder(new EmptyBorder(3, 10, 3, 10));
+            pill.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.CENTER;
+            add(pill, gbc);
         }
 
         @Override
@@ -249,31 +354,34 @@ public class MyJobsFrame extends JFrame {
                                                        int row,
                                                        int column) {
             String status = String.valueOf(value);
-            setText(status);
+            pill.setText(status);
+            pill.putClientProperty(FlatClientProperties.STYLE, "arc: 999");
 
             if ("Closed".equalsIgnoreCase(status)) {
-                setBackground(new Color(241, 245, 249));
-                setForeground(new Color(100, 116, 139));
+                pill.setBackground(CLOSED_BG);
+                pill.setForeground(CLOSED_FG);
             } else if ("Draft".equalsIgnoreCase(status)) {
-                setBackground(new Color(254, 243, 199));
-                setForeground(new Color(146, 64, 14));
+                pill.setBackground(DRAFT_BG);
+                pill.setForeground(DRAFT_FG);
             } else {
-                setBackground(new Color(220, 252, 231));
-                setForeground(new Color(22, 101, 52));
+                pill.setBackground(OPEN_BG);
+                pill.setForeground(OPEN_FG);
             }
+
+            setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
             return this;
         }
     }
 
     private class ActionsCellRenderer extends JPanel implements TableCellRenderer {
-        private final JButton viewButton = createGhostIconButton("View", new Color(30, 41, 59));
-        private final JButton taButton = createGhostIconButton("TAs", new Color(37, 99, 235));
-        private final JButton editButton = createGhostIconButton("Edit", new Color(30, 41, 59));
-        private final JButton toggleButton = createGhostIconButton("Toggle", new Color(22, 163, 74));
-        private final JButton deleteButton = createGhostIconButton("Delete", new Color(220, 38, 38));
+        private final JButton viewButton = createSpecIconButton(MoActionIcons.viewJob(), "View job details");
+        private final JButton taButton = createSpecIconButton(MoActionIcons.allocatedTas(), "View allocated TAs");
+        private final JButton editButton = createSpecIconButton(MoActionIcons.editJobBlue(), "Edit job");
+        private final JButton toggleButton = createSpecIconButton(MoActionIcons.toggleSwitch(false), "Mark job as open");
+        private final JButton deleteButton = createSpecIconButton(MoActionIcons.deleteJobRed(), "Delete job");
 
         ActionsCellRenderer() {
-            setLayout(new FlowLayout(FlowLayout.RIGHT, 6, 8));
+            setLayout(new FlowLayout(FlowLayout.RIGHT, 6, 4));
             setOpaque(true);
             add(viewButton);
             add(taButton);
@@ -290,17 +398,18 @@ public class MyJobsFrame extends JFrame {
                                                        int row,
                                                        int column) {
             setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+            refreshActionIconsForRow(row, editButton, toggleButton, deleteButton);
             return this;
         }
     }
 
     private class ActionsCellEditor extends javax.swing.AbstractCellEditor implements TableCellEditor {
-        private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 8));
-        private final JButton viewButton = createGhostIconButton("View", new Color(30, 41, 59));
-        private final JButton taButton = createGhostIconButton("TAs", new Color(37, 99, 235));
-        private final JButton editButton = createGhostIconButton("Edit", new Color(30, 41, 59));
-        private final JButton toggleButton = createGhostIconButton("Toggle", new Color(22, 163, 74));
-        private final JButton deleteButton = createGhostIconButton("Delete", new Color(220, 38, 38));
+        private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 4));
+        private final JButton viewButton = createSpecIconButton(MoActionIcons.viewJob(), "View job details");
+        private final JButton taButton = createSpecIconButton(MoActionIcons.allocatedTas(), "View allocated TAs");
+        private final JButton editButton = createSpecIconButton(MoActionIcons.editJobBlue(), "Edit job");
+        private final JButton toggleButton = createSpecIconButton(MoActionIcons.toggleSwitch(false), "Mark job as open");
+        private final JButton deleteButton = createSpecIconButton(MoActionIcons.deleteJobRed(), "Delete job");
 
         private int editingRow = -1;
 
@@ -313,16 +422,32 @@ public class MyJobsFrame extends JFrame {
             panel.add(deleteButton);
 
             viewButton.addActionListener(e -> {
-                showActionHint("View Job Detail page");
-                fireEditingStopped();
+                if (editingRow >= 0) {
+                    Job job = tableModel.getJobAt(editingRow);
+                    fireEditingStopped();
+                    new JobDetailFrame(MyJobsFrame.this, jobRepository, job, MyJobsFrame.this::reloadJobsFromRepository)
+                            .setVisible(true);
+                } else {
+                    fireEditingStopped();
+                }
             });
             taButton.addActionListener(e -> {
-                showActionHint("TA Allocation Results page");
-                fireEditingStopped();
+                if (editingRow >= 0) {
+                    Job job = tableModel.getJobAt(editingRow);
+                    fireEditingStopped();
+                    new TaAllocationFrame(MyJobsFrame.this, jobRepository, job).setVisible(true);
+                } else {
+                    fireEditingStopped();
+                }
             });
             editButton.addActionListener(e -> {
-                showActionHint("Edit Job page");
-                fireEditingStopped();
+                if (editingRow >= 0) {
+                    Job job = tableModel.getJobAt(editingRow);
+                    fireEditingStopped();
+                    new CreateJobFrame(MyJobsFrame.this, jobRepository, job).setVisible(true);
+                } else {
+                    fireEditingStopped();
+                }
             });
             toggleButton.addActionListener(e -> {
                 if (editingRow >= 0) {
@@ -361,6 +486,7 @@ public class MyJobsFrame extends JFrame {
                                                      int column) {
             this.editingRow = row;
             panel.setBackground(table.getSelectionBackground());
+            refreshActionIconsForRow(row, editButton, toggleButton, deleteButton);
             return panel;
         }
 
@@ -370,24 +496,15 @@ public class MyJobsFrame extends JFrame {
         }
     }
 
-    private void showActionHint(String pageName) {
-        JOptionPane.showMessageDialog(
-                this,
-                pageName + " will be implemented in next step.",
-                "Info",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-    }
-
-    private static JButton createGhostIconButton(String text, Color textColor) {
-        JButton button = new JButton(text);
+    private static JButton createSpecIconButton(Icon icon, String tooltip) {
+        JButton button = new JButton(icon);
+        button.setToolTipText(tooltip);
         button.setFocusPainted(false);
         button.setContentAreaFilled(false);
-        button.setBorder(new EmptyBorder(2, 6, 2, 6));
-        button.setMargin(new Insets(2, 6, 2, 6));
-        button.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        button.setForeground(textColor);
-        button.setToolTipText(text);
+        button.setBorder(new EmptyBorder(1, 2, 1, 2));
+        button.setIconTextGap(0);
+        button.setPreferredSize(new Dimension(26, 26));
+        button.setFocusable(false);
         return button;
     }
 }

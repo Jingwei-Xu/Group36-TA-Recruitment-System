@@ -1,7 +1,7 @@
 package com.mojobsystem;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.mojobsystem.ui.MyJobsFrame;
+import com.mojobsystem.ui.MoDashboardFrame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -15,7 +15,7 @@ public class App {
         }
 
         SwingUtilities.invokeLater(() -> {
-            MyJobsFrame frame = new MyJobsFrame();
+            MoDashboardFrame frame = new MoDashboardFrame();
             frame.setVisible(true);
         });
     }
