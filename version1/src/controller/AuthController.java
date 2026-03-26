@@ -1,57 +1,61 @@
+package controller;
+
 import model.User;
 import service.AuthService;
-import session.SessionManager;
+
+import view.TAHomePage;
+import view.MOHomePage;
+import view.AdminHomePage;
 
 public class AuthController {
 
-    private AuthService authService = new AuthService();
+    private AuthService authService;
 
-    // Register
+    public AuthController() {
+        this.authService = new AuthService();
+    }
+
+    // ========================
+    // Handle Register
+    // ========================
     public void handleRegister(String username, String password, String role) {
+
         boolean success = authService.register(username, password, role);
 
         if (success) {
-            System.out.println("Register successful.");
+            System.out.println("Registration successful!");
         } else {
             System.out.println("Username already exists.");
         }
     }
 
-    // Login
+    // ========================
+    // Handle Login
+    // ========================
     public void handleLogin(String username, String password) {
+
         User user = authService.login(username, password);
 
         if (user == null) {
-            System.out.println("Login failed.");
-        } else {
-            SessionManager.login(user);
-            System.out.println("Login successful.");
-            redirectByRole(user);
+            System.out.println("Invalid username or password.");
+            return;
         }
-    }
 
-    // Role-based navigation (先用占位)
-    private void redirectByRole(User user) {
-        String role = user.getRole();
+        System.out.println("Login successful!");
 
-        switch (role) {
+        // ⭐ 关键：根据角色跳转
+        switch (user.getRole()) {
             case "TA":
-                System.out.println("[Placeholder] Go to TA Home Page");
+                TAHomePage.show();
                 break;
             case "MO":
-                System.out.println("[Placeholder] Go to MO Home Page");
+                MOHomePage.show();
                 break;
             case "Admin":
-                System.out.println("[Placeholder] Go to Admin Home Page");
+                AdminHomePage.show();
                 break;
             default:
                 System.out.println("Unknown role.");
         }
-    }
-
-    // Logout
-    public void handleLogout() {
-        SessionManager.logout();
-        System.out.println("Logged out.");
     }
 }
