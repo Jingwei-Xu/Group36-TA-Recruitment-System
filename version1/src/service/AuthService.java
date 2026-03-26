@@ -34,7 +34,7 @@ public class AuthService {
     // Login
     public User login(String username, String password) {
 
-        // 每次登录重新加载（防止数据不同步 ⭐加分点）
+        // 每次登录重新加载（防止数据不同步 ）
         users = JsonUtil.loadAllUsers();
 
         for (User user : users) {
