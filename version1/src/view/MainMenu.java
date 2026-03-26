@@ -1,4 +1,7 @@
+package view;
+
 import java.util.Scanner;
+
 import controller.AuthController;
 
 public class MainMenu {
@@ -9,7 +12,6 @@ public class MainMenu {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-
             System.out.println("\n===== TA Recruitment System =====");
             System.out.println("1. Login");
             System.out.println("2. Register");
@@ -17,7 +19,7 @@ public class MainMenu {
 
             System.out.print("Select option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // clear buffer
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
