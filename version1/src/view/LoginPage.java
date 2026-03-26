@@ -1,3 +1,5 @@
+package view;
+
 import java.util.Scanner;
 import controller.AuthController;
 
@@ -7,12 +9,12 @@ public class LoginPage {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\n===== LOGIN PAGE =====");
+        System.out.println("\n=== Login ===");
 
-        System.out.print("Enter username: ");
+        System.out.print("Username: ");
         String username = scanner.nextLine();
 
-        System.out.print("Enter password: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine();
 
         controller.handleLogin(username, password);
