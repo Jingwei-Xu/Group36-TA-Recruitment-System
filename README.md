@@ -267,6 +267,13 @@ data
 | 2026-03-20 | @Longmotong |Motong-Long/report  |complete the first version of the report writing |
 | 2026-03-20 | @Longmotong |Motong-Long/TA_prototype  |Complete the format modification of the integrated prototype design and the adjustment of the public dashboard section |
 | 2026-03-21 | @Longmotong |Motong-Long/report  |Complete the revision of the report and improve and supplement the supporting materials |
+| 2026-03-22 | @Longmotong |Motong-Long/TA_job_application_module  |The initial state of the module has been created, including the work overview page, work details page, and application page |
+| 2026-03-23 | @Longmotong |Motong-Long/TA_job_application_module  |I have added a detailed page for each application, strengthened the connection between each page, and updated the UI design of the dashboard and existing pages |
+| 2026-03-24 | @Longmotong |Motong-Long/TA_job_application_module  |The specific application functions have been improved, enabling applications to actually access and save data in the data folder |
+| 2026-03-28 | @Longmotong |Motong-Long/TA_job_application_module  |Perform initial integration on the MO terminal, remove one of the dashboards, and establish initial connections |
+| 2026-03-2 | @Longmotong |Motong-Long/TA_job_application_module and data |Continue to complete the integration of the mo terminal, and establish basic connectivity with the login and registration system and also create more data examples |
+
+
 
 
 
