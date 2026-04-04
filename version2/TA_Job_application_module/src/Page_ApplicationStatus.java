@@ -72,13 +72,9 @@ public class Page_ApplicationStatus {
         panel.add(Box.createVerticalStrut(CARD_GAP));
         panel.add(buildStatusInfoCard(app));
         panel.add(Box.createVerticalStrut(CARD_GAP));
-        panel.add(buildTextCard("Reviewer Notes", defaultReviewerNotes(app), colorKey));
+        panel.add(buildTextCard("Reviewer Notes", defaultReviewerNotes(app), resolveStatusColorKey(app)));
         panel.add(Box.createVerticalStrut(CARD_GAP));
-        panel.add(buildTextCard("Next Steps", defaultNextSteps(app), colorKey));
-    }
-
-    private String colorKey(Application app) {
-        return resolveStatusColorKey(app);
+        panel.add(buildTextCard("Next Steps", defaultNextSteps(app), resolveStatusColorKey(app)));
     }
 
     private JPanel buildSummaryCard(Application app) {
@@ -172,23 +168,42 @@ public class Page_ApplicationStatus {
         return bar;
     }
 
+    /**
+     * 颜色语义：接受绿、拒绝红、审查中蓝、pending 黄；优先按 current 字段，避免 JSON 里 color 与状态不一致。
+     */
     private String resolveStatusColorKey(Application app) {
         Application.Status st = app.getStatus();
         if (st == null) {
             return "yellow";
         }
+        String cur = st.getCurrent();
+        if (cur != null) {
+            switch (cur.toLowerCase()) {
+                case "accepted":
+                    return "green";
+                case "rejected":
+                    return "red";
+                case "under_review":
+                    return "blue";
+                case "pending":
+                    return "yellow";
+                default:
+                    break;
+            }
+        }
         String c = st.getColor();
         if (c != null && !c.isEmpty()) {
-            return c;
+            return normalizeColorKey(c);
         }
-        String cur = st.getCurrent();
-        if (cur == null) {
-            return "yellow";
-        }
-        return switch (cur.toLowerCase()) {
-            case "accepted" -> "green";
-            case "rejected" -> "red";
-            case "under_review", "pending" -> "blue";
+        return "yellow";
+    }
+
+    private static String normalizeColorKey(String c) {
+        return switch (c.trim().toLowerCase()) {
+            case "green" -> "green";
+            case "red" -> "red";
+            case "blue" -> "blue";
+            case "yellow" -> "yellow";
             default -> "yellow";
         };
     }
@@ -234,10 +249,31 @@ public class Page_ApplicationStatus {
         return list;
     }
 
-    private JPanel buildTimelineRow(Application.TimelineEvent ev, boolean drawLineBelow) {
+    private JPanel buildTimelineRow(Application.TimelineEvent ev, boolean drawLineBelow, String colorKey) {
         JPanel row = new JPanel(new BorderLayout(12, 0));
         row.setOpaque(false);
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        Color statusDotColor;
+        Color statusLineColor;
+        switch (colorKey != null ? colorKey : "yellow") {
+            case "green" -> {
+                statusDotColor = UI_Constants.SUCCESS_COLOR;
+                statusLineColor = UI_Constants.SUCCESS_COLOR;
+            }
+            case "red" -> {
+                statusDotColor = UI_Constants.DANGER_COLOR;
+                statusLineColor = TIMELINE_LINE_RED;
+            }
+            case "blue" -> {
+                statusDotColor = UI_Constants.INFO_COLOR;
+                statusLineColor = TIMELINE_LINE_BLUE;
+            }
+            default -> {
+                statusDotColor = UI_Constants.WARNING_COLOR;
+                statusLineColor = TIMELINE_LINE_YELLOW;
+            }
+        }
 
         JPanel rail = new JPanel() {
             @Override
@@ -248,7 +284,7 @@ public class Page_ApplicationStatus {
                 int cx = getWidth() / 2;
                 int r = 7;
                 boolean done = ev.getStatus() == null || "completed".equalsIgnoreCase(ev.getStatus());
-                g2.setColor(done ? UI_Constants.SUCCESS_COLOR : UI_Constants.BORDER_COLOR);
+                g2.setColor(done ? statusDotColor : UI_Constants.BORDER_COLOR);
                 g2.fillOval(cx - r, 6, r * 2, r * 2);
                 if (done) {
                     g2.setColor(Color.WHITE);
@@ -257,7 +293,7 @@ public class Page_ApplicationStatus {
                     g2.drawLine(cx - 1, 16, cx + 4, 10);
                 }
                 if (drawLineBelow) {
-                    g2.setColor(TIMELINE_LINE);
+                    g2.setColor(statusLineColor);
                     g2.setStroke(new BasicStroke(2f));
                     g2.drawLine(cx, 6 + r * 2 + 2, cx, getHeight() - 2);
                 }
@@ -300,6 +336,17 @@ public class Page_ApplicationStatus {
         String msg = review != null && review.getStatusMessage() != null && !review.getStatusMessage().isEmpty()
             ? review.getStatusMessage()
             : "Your application is being processed.";
+        String ck = resolveStatusColorKey(app);
+
+        Color bg;
+        Color fg;
+        Color border;
+        switch (ck) {
+            case "green" -> { bg = new Color(236, 253, 245); fg = new Color(6, 95, 70); border = new Color(167, 243, 208); }
+            case "red"   -> { bg = new Color(254, 242, 242); fg = new Color(153, 27, 27); border = new Color(252, 165, 165); }
+            case "blue"  -> { bg = new Color(239, 246, 255); fg = new Color(29, 78, 216); border = new Color(147, 197, 253); }
+            default      -> { bg = new Color(254, 252, 232); fg = new Color(161, 98, 7); border = new Color(253, 230, 138); }
+        }
 
         JPanel inner = new JPanel();
         inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
@@ -310,9 +357,9 @@ public class Page_ApplicationStatus {
         JPanel box = new JPanel();
         box.setLayout(new BorderLayout());
         box.setOpaque(true);
-        box.setBackground(STATUS_INFO_BG);
+        box.setBackground(bg);
         box.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(STATUS_INFO_BORDER, 1),
+            BorderFactory.createLineBorder(border, 1),
             new EmptyBorder(16, 16, 16, 16)
         ));
         box.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -323,7 +370,7 @@ public class Page_ApplicationStatus {
         ta.setLineWrap(true);
         ta.setWrapStyleWord(true);
         ta.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        ta.setForeground(STATUS_INFO_TEXT);
+        ta.setForeground(fg);
         ta.setBorder(BorderFactory.createEmptyBorder());
         box.add(ta, BorderLayout.CENTER);
 
@@ -334,12 +381,34 @@ public class Page_ApplicationStatus {
         return card;
     }
 
-    private JPanel buildTextCard(String heading, String body) {
-        JPanel inner = new JPanel();
-        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+    private static final int TEXT_CARD_ACCENT_WIDTH = 5;
+    private static final int TEXT_CARD_GAP_AFTER_ACCENT = 14;
+
+    private JPanel buildTextCard(String heading, String body, String colorKey) {
+        Color accentColor;
+        switch (colorKey != null ? colorKey : "yellow") {
+            case "green" -> accentColor = UI_Constants.SUCCESS_COLOR;
+            case "red"   -> accentColor = UI_Constants.DANGER_COLOR;
+            case "blue"  -> accentColor = UI_Constants.INFO_COLOR;
+            default      -> accentColor = UI_Constants.WARNING_COLOR;
+        }
+
+        JPanel inner = new JPanel(new BorderLayout(0, 0));
         inner.setOpaque(false);
-        inner.add(sectionHeading(heading));
-        inner.add(Box.createVerticalStrut(10));
+
+        JPanel accent = new JPanel();
+        accent.setOpaque(true);
+        accent.setBackground(accentColor);
+        accent.setPreferredSize(new Dimension(TEXT_CARD_ACCENT_WIDTH, 0));
+        accent.setMinimumSize(new Dimension(TEXT_CARD_ACCENT_WIDTH, 0));
+        accent.setMaximumSize(new Dimension(TEXT_CARD_ACCENT_WIDTH, Integer.MAX_VALUE));
+
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+        content.setBorder(new EmptyBorder(0, TEXT_CARD_GAP_AFTER_ACCENT, 0, 0));
+        content.add(sectionHeading(heading));
+        content.add(Box.createVerticalStrut(10));
 
         JTextArea ta = new JTextArea(body == null ? "" : body);
         ta.setEditable(false);
@@ -350,7 +419,10 @@ public class Page_ApplicationStatus {
         ta.setForeground(UI_Constants.TEXT_PRIMARY);
         ta.setBorder(BorderFactory.createEmptyBorder());
         ta.setAlignmentX(Component.LEFT_ALIGNMENT);
-        inner.add(ta);
+        content.add(ta);
+
+        inner.add(accent, BorderLayout.WEST);
+        inner.add(content, BorderLayout.CENTER);
 
         JPanel card = wrapInCard(inner);
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
