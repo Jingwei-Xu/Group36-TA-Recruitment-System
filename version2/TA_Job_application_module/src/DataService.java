@@ -50,18 +50,14 @@ public class DataService {
         // 尝试的路径列表（按优先级从高到低）
         String userDir = System.getProperty("user.dir");
         String[][] possiblePaths = {
-            // 0. system根目录下的data/jobs（用户最可能的数据位置）
+            // 0. 父级目录的 data/jobs（src/data，与 version2 同级）
+            { userDir + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "父级src目录（3级）" },
+            // 1. system根目录下的data/jobs（用户最可能的数据位置）
             { userDir + File.separator + "data" + File.separator + "jobs", "system根目录" },
-            // 1. src/data/jobs（与TA_Job_Application_Module平级的src目录）
-            { userDir + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "src目录" },
-            // 2. system根目录的父目录下的system/data/jobs
-            { userDir + File.separator + ".." + File.separator + "system" + File.separator + "data" + File.separator + "jobs", "system父目录" },
-            // 3. ta-portal/data/jobs（相对于ta-portal模块）
+            // 2. ta-portal/data/jobs（相对于ta-portal模块）
             { userDir + File.separator + "ta-portal" + File.separator + "data" + File.separator + "jobs", "ta-portal目录" },
-            // 4. 相对路径 ../data/jobs
-            { ".." + File.separator + "data" + File.separator + "jobs", "相对路径" },
-            // 5. 默认data/jobs
-            { "data" + File.separator + "jobs", "默认相对路径" }
+            // 3. 相对路径 ../../../data/jobs（从src向上3级）
+            { ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "相对路径（3级）" }
         };
         
         for (String[] pathInfo : possiblePaths) {
@@ -90,12 +86,10 @@ public class DataService {
     private File findApplicationsDirectory() {
         String userDir = System.getProperty("user.dir");
         String[][] possiblePaths = {
+            { userDir + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "applications", "父级src目录（3级）" },
             { userDir + File.separator + "data" + File.separator + "applications", "system根目录" },
-            { userDir + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "applications", "src目录" },
-            { userDir + File.separator + ".." + File.separator + "system" + File.separator + "data" + File.separator + "applications", "system父目录" },
             { userDir + File.separator + "ta-portal" + File.separator + "data" + File.separator + "applications", "ta-portal目录" },
-            { ".." + File.separator + "data" + File.separator + "applications", "相对路径" },
-            { "data" + File.separator + "applications", "默认相对路径" }
+            { ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "applications", "相对路径（3级）" }
         };
 
         for (String[] pathInfo : possiblePaths) {

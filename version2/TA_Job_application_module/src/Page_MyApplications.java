@@ -1,141 +1,383 @@
 
 
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.Point;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 
 
 /**
- * 我的申请页面
- * 显示用户所有申请记录的列表
+ * 我的申请页面（设计稿：统计卡片 + 搜索筛选 + 状态徽章表格）
  */
 public class Page_MyApplications {
-    
+
     public interface MyApplicationsCallback {
         void onViewStatus(Application application);
+        void onBackToHome();
+        void onBrowseJobs();
     }
-    
+
+    private static final String PLACEHOLDER_SEARCH = "Search by job title...";
+    private static final int JOB_TITLE_COL_MIN_WIDTH = 200;
+    /** 与列宽匹配的 HTML 换行最小宽度（列变宽时会用更大值） */
+    private static final int JOB_TITLE_WRAP_INNER_PX = 248;
+    /** 第 2–7 列固定宽度（STATUS 列 = BADGE_OUTER_WIDTH+24，见 StatusBadgeRenderer） */
+    private static final int[] REST_COL_WIDTHS = {96, 200, 140, 192, 140, 88};
+
     private JPanel panel;
+    private JPanel northStack;
     private JTable applicationsTable;
     private DefaultTableModel tableModel;
-    private DataService dataService;
-    private MyApplicationsCallback callback;
-    
+    private JTextField searchField;
+    private JComboBox<String> statusFilterCombo;
+    private JLabel totalValueLabel;
+    private JLabel pendingValueLabel;
+    private JLabel underReviewValueLabel;
+    private JLabel acceptedValueLabel;
+    private JLabel rejectedValueLabel;
+
+    private final DataService dataService;
+    private final MyApplicationsCallback callback;
+    /** 与表格行顺序一致，用于点击 View */
+    private final List<Application> displayedApplications = new ArrayList<>();
+
     public Page_MyApplications(DataService dataService, MyApplicationsCallback callback) {
         this.dataService = dataService;
         this.callback = callback;
         initPanel();
     }
-    
+
     public JPanel getPanel() {
         return panel;
     }
-    
+
     public void refreshTable() {
-        refreshData();
+        updateSummaryCards();
+        applyFiltersAndFillTable();
     }
-    
+
     private void initPanel() {
         panel = new JPanel(new BorderLayout());
         panel.setBackground(UI_Constants.BG_COLOR);
-        panel.setBorder(new EmptyBorder(30, 40, 30, 40));
-        
-        buildHeader();
-        buildTable();
-    }
-    
-    private void buildHeader() {
-        JPanel northStack = new JPanel();
+        panel.setBorder(new EmptyBorder(24, 40, 32, 40));
+
+        northStack = new JPanel();
         northStack.setLayout(new BoxLayout(northStack, BoxLayout.Y_AXIS));
         northStack.setOpaque(false);
-        
-        JPanel headerLeft = new JPanel(new BorderLayout());
-        headerLeft.setOpaque(false);
-        
+
+        buildBackLink();
+        buildTitleRow();
+        buildSummaryCards();
+        buildSearchFilterBar();
+
+        panel.add(northStack, BorderLayout.NORTH);
+        buildTable();
+    }
+
+    private void buildBackLink() {
+        JButton back = new JButton("\u2190  Back to Home");
+        back.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        back.setForeground(UI_Constants.TEXT_SECONDARY);
+        back.setContentAreaFilled(false);
+        back.setBorderPainted(false);
+        back.setFocusPainted(false);
+        back.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        back.setAlignmentX(Component.LEFT_ALIGNMENT);
+        back.setHorizontalAlignment(SwingConstants.LEFT);
+        back.addActionListener(e -> callback.onBackToHome());
+        northStack.add(back);
+        northStack.add(Box.createVerticalStrut(16));
+    }
+
+    private void buildTitleRow() {
+        JPanel row = new JPanel(new BorderLayout(24, 0));
+        row.setOpaque(false);
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+
+        JPanel left = new JPanel();
+        left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+        left.setOpaque(false);
+
         JLabel titleLabel = new JLabel("My Applications");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(UI_Constants.TEXT_PRIMARY);
-        headerLeft.add(titleLabel, BorderLayout.NORTH);
-        
-        JLabel subtitleLabel = new JLabel("Track and manage your TA applications");
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        left.add(titleLabel);
+
+        JLabel subtitleLabel = new JLabel("Track all your TA position applications");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         subtitleLabel.setForeground(UI_Constants.TEXT_SECONDARY);
-        subtitleLabel.setBorder(new EmptyBorder(5, 0, 0, 0));
-        headerLeft.add(subtitleLabel, BorderLayout.SOUTH);
-        
-        northStack.add(headerLeft);
-        
-        // Summary cards
-        JPanel summaryPanel = new JPanel(new GridLayout(1, 4, 15, 15));
-        summaryPanel.setOpaque(false);
-        summaryPanel.setBorder(new EmptyBorder(25, 0, 25, 0));
-        
-        summaryPanel.add(createSummaryCard("Total Applications", 
-            String.valueOf(dataService.countApplicationsByStatus("pending") + 
-                          dataService.countApplicationsByStatus("under_review") +
-                          dataService.countApplicationsByStatus("accepted") +
-                          dataService.countApplicationsByStatus("rejected")),
-            new Color(219, 234, 254), UI_Constants.INFO_COLOR));
-        
-        summaryPanel.add(createSummaryCard("Pending", 
-            String.valueOf(dataService.countApplicationsByStatus("pending")),
-            new Color(254, 243, 199), UI_Constants.WARNING_COLOR));
-        
-        summaryPanel.add(createSummaryCard("Accepted", 
-            String.valueOf(dataService.countApplicationsByStatus("accepted")),
-            new Color(209, 250, 229), UI_Constants.SUCCESS_COLOR));
-        
-        summaryPanel.add(createSummaryCard("Rejected", 
-            String.valueOf(dataService.countApplicationsByStatus("rejected")),
-            new Color(254, 226, 226), UI_Constants.DANGER_COLOR));
-        
-        northStack.add(summaryPanel);
-        panel.add(northStack, BorderLayout.NORTH);
+        subtitleLabel.setBorder(new EmptyBorder(6, 0, 0, 0));
+        subtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        left.add(subtitleLabel);
+
+        row.add(left, BorderLayout.WEST);
+
+        JButton browseBtn = UI_Helper.createOutlineButton("Browse Jobs");
+        browseBtn.addActionListener(e -> callback.onBrowseJobs());
+        JPanel east = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        east.setOpaque(false);
+        east.add(browseBtn);
+        row.add(east, BorderLayout.EAST);
+
+        northStack.add(row);
+        northStack.add(Box.createVerticalStrut(24));
     }
-    
+
+    private void buildSummaryCards() {
+        JPanel summaryPanel = new JPanel(new GridLayout(1, 5, 14, 0));
+        summaryPanel.setOpaque(false);
+        summaryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        summaryPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        totalValueLabel = new JLabel("0");
+        pendingValueLabel = new JLabel("0");
+        underReviewValueLabel = new JLabel("0");
+        acceptedValueLabel = new JLabel("0");
+        rejectedValueLabel = new JLabel("0");
+
+        summaryPanel.add(createStatCard("Total Applications", totalValueLabel, UI_Constants.TEXT_PRIMARY));
+        summaryPanel.add(createStatCard("Pending", pendingValueLabel, UI_Constants.WARNING_COLOR));
+        summaryPanel.add(createStatCard("Under Review", underReviewValueLabel, UI_Constants.INFO_COLOR));
+        summaryPanel.add(createStatCard("Accepted", acceptedValueLabel, UI_Constants.SUCCESS_COLOR));
+        summaryPanel.add(createStatCard("Rejected", rejectedValueLabel, UI_Constants.DANGER_COLOR));
+
+        northStack.add(summaryPanel);
+        northStack.add(Box.createVerticalStrut(20));
+        updateSummaryCards();
+    }
+
+    private JPanel createStatCard(String label, JLabel valueLabel, Color valueColor) {
+        JPanel card = UI_Helper.createCard();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBackground(UI_Constants.CARD_BG);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UI_Constants.BORDER_COLOR),
+            new EmptyBorder(18, 20, 18, 20)
+        ));
+
+        JLabel top = new JLabel(label);
+        top.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        top.setForeground(UI_Constants.TEXT_SECONDARY);
+        top.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(top);
+        card.add(Box.createVerticalStrut(8));
+
+        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        valueLabel.setForeground(valueColor);
+        valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(valueLabel);
+
+        return card;
+    }
+
+    private void updateSummaryCards() {
+        int pending = dataService.countApplicationsByStatus("pending");
+        int under = dataService.countApplicationsByStatus("under_review");
+        int accepted = dataService.countApplicationsByStatus("accepted");
+        int rejected = dataService.countApplicationsByStatus("rejected");
+        int total = pending + under + accepted + rejected;
+
+        totalValueLabel.setText(String.valueOf(total));
+        pendingValueLabel.setText(String.valueOf(pending));
+        underReviewValueLabel.setText(String.valueOf(under));
+        acceptedValueLabel.setText(String.valueOf(accepted));
+        rejectedValueLabel.setText(String.valueOf(rejected));
+    }
+
+    private void buildSearchFilterBar() {
+        JPanel bar = new JPanel(new BorderLayout(16, 0));
+        bar.setOpaque(false);
+        bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        bar.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        searchField = new JTextField();
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UI_Constants.BORDER_COLOR),
+            new EmptyBorder(10, 14, 10, 14)
+        ));
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (tableModel != null) applyFiltersAndFillTable();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (tableModel != null) applyFiltersAndFillTable();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (tableModel != null) applyFiltersAndFillTable();
+            }
+        });
+        installSearchPlaceholder();
+
+        JPanel searchWrap = new JPanel(new BorderLayout());
+        searchWrap.setOpaque(false);
+        bar.add(searchWrap, BorderLayout.CENTER);
+        searchWrap.add(searchField, BorderLayout.CENTER);
+
+        String[] statuses = {"All Statuses", "Pending", "Under Review", "Accepted", "Rejected"};
+        statusFilterCombo = new JComboBox<>(statuses);
+        statusFilterCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        statusFilterCombo.setBorder(BorderFactory.createLineBorder(UI_Constants.BORDER_COLOR));
+        statusFilterCombo.addActionListener(e -> applyFiltersAndFillTable());
+        Dimension comboSize = statusFilterCombo.getPreferredSize();
+        statusFilterCombo.setPreferredSize(new Dimension(Math.max(160, comboSize.width), 40));
+        bar.add(statusFilterCombo, BorderLayout.EAST);
+
+        northStack.add(bar);
+        northStack.add(Box.createVerticalStrut(16));
+    }
+
+    private void installSearchPlaceholder() {
+        searchField.setForeground(UI_Constants.TEXT_SECONDARY);
+        searchField.setText(PLACEHOLDER_SEARCH);
+        searchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+                if (PLACEHOLDER_SEARCH.equals(searchField.getText())) {
+                    searchField.setText("");
+                    searchField.setForeground(UI_Constants.TEXT_PRIMARY);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setForeground(UI_Constants.TEXT_SECONDARY);
+                    searchField.setText(PLACEHOLDER_SEARCH);
+                }
+            }
+        });
+    }
+
+    private String getSearchQuery() {
+        String t = searchField.getText();
+        if (PLACEHOLDER_SEARCH.equals(t)) {
+            return "";
+        }
+        return t == null ? "" : t.trim();
+    }
+
+    private String selectedStatusFilterKey() {
+        Object sel = statusFilterCombo.getSelectedItem();
+        if (sel == null) {
+            return null;
+        }
+        return switch (sel.toString()) {
+            case "Pending" -> "pending";
+            case "Under Review" -> "under_review";
+            case "Accepted" -> "accepted";
+            case "Rejected" -> "rejected";
+            default -> null;
+        };
+    }
+
     private void buildTable() {
-        String[] columns = {"Job Title", "Course", "Department", "Applied Date", "Status", "Last Updated", "Action"};
+        String[] columns = {"JOB TITLE", "COURSE", "DEPARTMENT", "APPLIED DATE", "STATUS", "LAST UPDATED", "ACTION"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         applicationsTable = new JTable(tableModel);
         applicationsTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        applicationsTable.setRowHeight(50);
-        applicationsTable.setGridColor(UI_Constants.BORDER_COLOR);
-        applicationsTable.setShowGrid(true);
-        applicationsTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        applicationsTable.getTableHeader().setBackground(UI_Constants.BG_COLOR);
-        applicationsTable.getTableHeader().setForeground(UI_Constants.TEXT_PRIMARY);
-        applicationsTable.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UI_Constants.BORDER_COLOR));
-        
-        // Center align cells
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        applicationsTable.setRowHeight(52);
+        applicationsTable.setGridColor(new Color(243, 244, 246));
+        applicationsTable.setShowGrid(false);
+        applicationsTable.setIntercellSpacing(new Dimension(0, 1));
+        applicationsTable.setSelectionBackground(new Color(238, 242, 255));
+        applicationsTable.setSelectionForeground(UI_Constants.TEXT_PRIMARY);
+        // 固定第 2–7 列；JOB TITLE 列随视口变宽填满，避免右侧大块空白
+        applicationsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        JTableHeader header = applicationsTable.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        header.setForeground(UI_Constants.TEXT_SECONDARY);
+        header.setBackground(new Color(249, 250, 251));
+        header.setPreferredSize(new Dimension(0, 44));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UI_Constants.BORDER_COLOR));
+
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                c.setHorizontalAlignment(JLabel.LEFT);
+                c.setBorder(new EmptyBorder(0, 12, 0, 12));
+                c.setBackground(new Color(249, 250, 251));
+                c.setForeground(UI_Constants.TEXT_SECONDARY);
+                return c;
+            }
+        };
+        header.setDefaultRenderer(headerRenderer);
+
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        leftRenderer.setHorizontalAlignment(JLabel.LEFT);
+        leftRenderer.setBorder(new EmptyBorder(0, 12, 0, 12));
+
+        DefaultTableCellRenderer titleRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                c.setHorizontalAlignment(JLabel.LEFT);
+                c.setVerticalAlignment(JLabel.TOP);
+                c.setBorder(new EmptyBorder(10, 12, 10, 12));
+                String full = value != null ? value.toString() : "";
+                c.setToolTipText(full.isEmpty() ? null : full);
+                // 长标题按当前列宽换行，避免省略号
+                if (full.length() > 42) {
+                    int colW = table.getColumnModel().getColumn(column).getWidth();
+                    int wrap = Math.max(JOB_TITLE_WRAP_INNER_PX, colW - 28);
+                    c.setText("<html><div style='width:" + wrap + "px'>" + escapeHtmlPlain(full) + "</div></html>");
+                } else {
+                    c.setText(full);
+                }
+                return c;
+            }
+        };
+
         for (int i = 0; i < columns.length; i++) {
-            applicationsTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            TableColumn col = applicationsTable.getColumnModel().getColumn(i);
+            if (i == 0) {
+                col.setCellRenderer(titleRenderer);
+            } else if (i == 4) {
+                col.setCellRenderer(new StatusBadgeRenderer());
+            } else if (i == 6) {
+                col.setCellRenderer(new ViewLinkRenderer());
+            } else {
+                col.setCellRenderer(leftRenderer);
+            }
         }
-        
-        // Status renderer
-        applicationsTable.getColumn("Status").setCellRenderer(new StatusRenderer());
-        
-        // Action renderer
-        applicationsTable.getColumn("Action").setCellRenderer(new ButtonRenderer());
-        
-        // Click handler
-        final int actionModelIndex = applicationsTable.getColumn("Action").getModelIndex();
+
+        applyColumnWidths();
+
+        final int actionCol = applicationsTable.getColumn("ACTION").getModelIndex();
         applicationsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -149,114 +391,241 @@ public class Page_MyApplications {
                     return;
                 }
                 int modelCol = applicationsTable.convertColumnIndexToModel(viewCol);
-                if (modelCol != actionModelIndex) {
+                if (modelCol != actionCol) {
                     return;
                 }
                 int modelRow = applicationsTable.convertRowIndexToModel(viewRow);
-                List<Application> apps = dataService.getUserApplications();
-                if (modelRow >= 0 && modelRow < apps.size()) {
-                    callback.onViewStatus(apps.get(modelRow));
+                if (modelRow >= 0 && modelRow < displayedApplications.size()) {
+                    callback.onViewStatus(displayedApplications.get(modelRow));
                 }
             }
         });
-        
+
         JScrollPane scrollPane = new JScrollPane(applicationsTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(UI_Constants.BORDER_COLOR));
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UI_Constants.BORDER_COLOR),
+            BorderFactory.createEmptyBorder(0, 0, 0, 0)
+        ));
         scrollPane.getViewport().setBackground(UI_Constants.CARD_BG);
-        
+        scrollPane.getViewport().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                syncJobTitleColumnToFillViewport();
+            }
+        });
+
         panel.add(scrollPane, BorderLayout.CENTER);
-        
-        refreshData();
+        applyFiltersAndFillTable();
+        SwingUtilities.invokeLater(this::syncJobTitleColumnToFillViewport);
     }
-    
-    private void refreshData() {
+
+    /** 第 2–7 列固定宽度；JOB TITLE 列用剩余宽度铺满视口（过窄时出现横向滚动条） */
+    private void applyColumnWidths() {
+        TableColumnModel cm = applicationsTable.getColumnModel();
+        if (cm.getColumnCount() < 7) {
+            return;
+        }
+        cm.getColumn(0).setMinWidth(JOB_TITLE_COL_MIN_WIDTH);
+        for (int i = 0; i < REST_COL_WIDTHS.length; i++) {
+            TableColumn c = cm.getColumn(i + 1);
+            c.setPreferredWidth(REST_COL_WIDTHS[i]);
+            c.setMinWidth(i == 3 ? REST_COL_WIDTHS[i] : Math.max(48, REST_COL_WIDTHS[i] / 2));
+        }
+        cm.getColumn(4).setMinWidth(REST_COL_WIDTHS[3]);
+    }
+
+    /** 让表格总宽度等于视口宽度，消除右侧空白 */
+    private void syncJobTitleColumnToFillViewport() {
+        if (applicationsTable == null) {
+            return;
+        }
+        Container parent = applicationsTable.getParent();
+        if (!(parent instanceof JViewport vp)) {
+            return;
+        }
+        int vw = vp.getWidth();
+        if (vw <= 0) {
+            return;
+        }
+        TableColumnModel cm = applicationsTable.getColumnModel();
+        if (cm.getColumnCount() < 7) {
+            return;
+        }
+
+        int fixed = 0;
+        for (int w : REST_COL_WIDTHS) {
+            fixed += w;
+        }
+        int spacing = applicationsTable.getIntercellSpacing().width * 6;
+        int fudge = 8;
+        int titleW = vw - fixed - spacing - fudge;
+        titleW = Math.max(titleW, JOB_TITLE_COL_MIN_WIDTH);
+
+        TableColumn c0 = cm.getColumn(0);
+        c0.setPreferredWidth(titleW);
+        c0.setWidth(titleW);
+
+        for (int i = 0; i < REST_COL_WIDTHS.length; i++) {
+            TableColumn c = cm.getColumn(i + 1);
+            int w = REST_COL_WIDTHS[i];
+            c.setPreferredWidth(w);
+            c.setWidth(w);
+        }
+
+        applicationsTable.revalidate();
+        applicationsTable.repaint();
+    }
+
+    private void applyFiltersAndFillTable() {
+        displayedApplications.clear();
         tableModel.setRowCount(0);
-        
+
+        String q = getSearchQuery().toLowerCase(Locale.ROOT);
+        String statusKey = selectedStatusFilterKey();
+
         for (Application app : dataService.getUserApplications()) {
-            String status = app.getStatus().getLabel();
-            
+            String title = app.getJobSnapshot() != null ? app.getJobSnapshot().getTitle() : "";
+            if (!q.isEmpty() && (title == null || !title.toLowerCase(Locale.ROOT).contains(q))) {
+                continue;
+            }
+            if (statusKey != null) {
+                String cur = app.getStatus() != null ? app.getStatus().getCurrent() : "";
+                if (!statusKey.equals(cur)) {
+                    continue;
+                }
+            }
+            displayedApplications.add(app);
+        }
+
+        DateTimeFormatter outDate = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+
+        for (Application app : displayedApplications) {
+            String statusLabel = app.getStatus() != null ? app.getStatus().getLabel() : "";
+            String submitted = "";
+            if (app.getMeta() != null && app.getMeta().getSubmittedAt() != null) {
+                submitted = formatDateOnly(app.getMeta().getSubmittedAt(), outDate);
+            }
+            String lastUp = "";
+            if (app.getStatus() != null && app.getStatus().getLastUpdated() != null) {
+                lastUp = formatDateOnly(app.getStatus().getLastUpdated(), outDate);
+            }
+
             Object[] row = {
-                app.getJobSnapshot().getTitle(),
-                app.getJobSnapshot().getCourseCode(),
-                app.getJobSnapshot().getDepartment(),
-                app.getMeta().getSubmittedAt().substring(0, 10),
-                status,
-                app.getStatus().getLastUpdated().substring(0, 16).replace("T", " "),
-                "View"
+                app.getJobSnapshot() != null ? app.getJobSnapshot().getTitle() : "",
+                app.getJobSnapshot() != null ? app.getJobSnapshot().getCourseCode() : "",
+                app.getJobSnapshot() != null ? app.getJobSnapshot().getDepartment() : "",
+                submitted,
+                statusLabel,
+                lastUp,
+                "view"
             };
             tableModel.addRow(row);
         }
+
+        SwingUtilities.invokeLater(() -> {
+            syncJobTitleColumnToFillViewport();
+            adjustRowHeightsForJobTitles();
+        });
     }
-    
-    private JPanel createSummaryCard(String label, String value, Color bg, Color iconColor) {
-        JPanel card = UI_Helper.createCard();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBackground(bg);
-        card.setBorder(new EmptyBorder(20, 20, 20, 20));
-        
-        JLabel valueLabel = new JLabel(value);
-        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        valueLabel.setForeground(iconColor);
-        card.add(valueLabel);
-        
-        JLabel labelLabel = new JLabel(label);
-        labelLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        labelLabel.setForeground(UI_Constants.TEXT_PRIMARY);
-        labelLabel.setBorder(new EmptyBorder(5, 0, 0, 0));
-        card.add(labelLabel);
-        
-        return card;
-    }
-    
-    // ==================== Table Renderers ====================
-    
-    class StatusRenderer extends DefaultTableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            cell.setHorizontalAlignment(JLabel.CENTER);
-            
-            String status = (String) value;
-            Color bg, fg;
-            
-            switch (status.toLowerCase()) {
-                case "pending" -> { bg = new Color(254, 243, 199); fg = UI_Constants.WARNING_COLOR; }
-                case "under review" -> { bg = new Color(219, 234, 254); fg = UI_Constants.INFO_COLOR; }
-                case "accepted" -> { bg = new Color(209, 250, 229); fg = UI_Constants.SUCCESS_COLOR; }
-                case "rejected" -> { bg = new Color(254, 226, 226); fg = UI_Constants.DANGER_COLOR; }
-                default -> { bg = UI_Constants.BG_COLOR; fg = UI_Constants.TEXT_SECONDARY; }
-            }
-            
-            cell.setBackground(bg);
-            cell.setForeground(fg);
-            cell.setOpaque(true);
-            cell.setBorder(new EmptyBorder(5, 10, 5, 10));
-            
-            return cell;
+
+    private void adjustRowHeightsForJobTitles() {
+        if (applicationsTable == null || tableModel == null) {
+            return;
+        }
+        int rows = tableModel.getRowCount();
+        for (int row = 0; row < rows; row++) {
+            Component comp = applicationsTable.prepareRenderer(applicationsTable.getCellRenderer(row, 0), row, 0);
+            int h = comp.getPreferredSize().height;
+            applicationsTable.setRowHeight(row, Math.max(52, h + 8));
         }
     }
-    
-    class ButtonRenderer extends JLabel implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
+
+    private static String escapeHtmlPlain(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+    }
+
+    private static String formatDateOnly(String iso, DateTimeFormatter outDate) {
+        if (iso == null || iso.length() < 10) {
+            return "";
+        }
+        try {
+            return LocalDate.parse(iso.substring(0, 10)).format(outDate);
+        } catch (DateTimeParseException e) {
+            return iso.substring(0, 10);
+        }
+    }
+
+    // ==================== Renderers ====================
+
+    static class StatusBadgeRenderer implements TableCellRenderer {
+        /** 状态列里色块统一宽度（与列宽计算一致） */
+        static final int BADGE_OUTER_WIDTH = 168;
+        private static final int BADGE_H = 30;
+
+        private final JPanel wrap = new JPanel(new BorderLayout());
+        private final JLabel inner = new JLabel("", SwingConstants.CENTER);
+
+        StatusBadgeRenderer() {
+            wrap.setOpaque(true);
+            wrap.setBorder(new EmptyBorder(0, 12, 0, 8));
+            inner.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            inner.setOpaque(true);
+            inner.setBorder(new EmptyBorder(6, 8, 6, 8));
+            inner.setPreferredSize(new Dimension(BADGE_OUTER_WIDTH, BADGE_H));
+            inner.setMinimumSize(new Dimension(BADGE_OUTER_WIDTH, BADGE_H));
+            inner.setMaximumSize(new Dimension(BADGE_OUTER_WIDTH, BADGE_H));
+            wrap.add(inner, BorderLayout.WEST);
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("View");
-            setFont(new Font("Segoe UI", Font.PLAIN, 13));
-            setHorizontalAlignment(SwingConstants.CENTER);
-            if (isSelected) {
-                setForeground(UI_Constants.PRIMARY_COLOR);
-                setBackground(new Color(238, 242, 255));
-                setBorder(BorderFactory.createLineBorder(UI_Constants.PRIMARY_COLOR));
+            String label = value != null ? value.toString() : "";
+            String key = label.toLowerCase(Locale.ROOT);
+            Color bg;
+            Color fg;
+            if (key.contains("pending")) {
+                bg = new Color(254, 243, 199);
+                fg = new Color(180, 83, 9);
+            } else if (key.contains("under review")) {
+                bg = new Color(219, 234, 254);
+                fg = new Color(29, 78, 216);
+            } else if (key.contains("accepted")) {
+                bg = new Color(209, 250, 229);
+                fg = new Color(5, 122, 85);
+            } else if (key.contains("rejected")) {
+                bg = new Color(254, 226, 226);
+                fg = new Color(185, 28, 28);
             } else {
-                setForeground(UI_Constants.PRIMARY_COLOR);
-                setBackground(UI_Constants.BG_COLOR);
-                setBorder(BorderFactory.createLineBorder(UI_Constants.PRIMARY_COLOR));
+                bg = UI_Constants.BG_COLOR;
+                fg = UI_Constants.TEXT_SECONDARY;
             }
-            setOpaque(true);
-            return this;
+            inner.setText(label);
+            inner.setBackground(bg);
+            inner.setForeground(fg);
+            inner.setToolTipText(label.isEmpty() ? null : label);
+            wrap.setBackground(isSelected ? table.getSelectionBackground() : UI_Constants.CARD_BG);
+            return wrap;
+        }
+    }
+
+    static class ViewLinkRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            c.setText("<html><font color='#4F46E5'><u>View</u></font></html>");
+            c.setHorizontalAlignment(SwingConstants.LEFT);
+            c.setBorder(new EmptyBorder(0, 12, 0, 12));
+            c.setIcon(null);
+            c.setOpaque(true);
+            if (isSelected) {
+                c.setBackground(table.getSelectionBackground());
+            } else {
+                c.setBackground(UI_Constants.CARD_BG);
+            }
+            return c;
         }
     }
 }

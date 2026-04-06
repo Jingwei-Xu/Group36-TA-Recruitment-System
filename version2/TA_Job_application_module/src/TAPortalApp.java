@@ -226,6 +226,16 @@ public class TAPortalApp extends JFrame {
                 applicationStatusPage.showApplication(application);
                 showPage("status");
             }
+
+            @Override
+            public void onBackToHome() {
+                showPage("dashboard");
+            }
+
+            @Override
+            public void onBrowseJobs() {
+                showPage("jobs");
+            }
         });
         mainContentPanel.add(myApplicationsPage.getPanel(), "applications");
         
