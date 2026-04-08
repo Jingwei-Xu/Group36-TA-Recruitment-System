@@ -23,10 +23,12 @@ public class Page_ApplicationStatus {
 
     public interface StatusCallback {
         void onBackToApplications();
+        void onCancelled();
     }
 
     private JPanel panel;
     private StatusCallback callback;
+    private Application currentApp;
 
     public Page_ApplicationStatus(StatusCallback callback) {
         this.callback = callback;
@@ -37,7 +39,12 @@ public class Page_ApplicationStatus {
         return panel;
     }
 
+    public String getCurrentApplicationId() {
+        return currentApp != null ? currentApp.getApplicationId() : null;
+    }
+
     public void showApplication(Application app) {
+        this.currentApp = app;
         panel.removeAll();
         buildContent(app);
         panel.revalidate();
@@ -67,6 +74,8 @@ public class Page_ApplicationStatus {
         panel.add(pageTitle);
 
         panel.add(buildSummaryCard(app));
+        panel.add(Box.createVerticalStrut(CARD_GAP));
+        panel.add(buildCancelCard(app));
         panel.add(Box.createVerticalStrut(CARD_GAP));
         panel.add(buildTimelineCard(app));
         panel.add(Box.createVerticalStrut(CARD_GAP));
@@ -451,6 +460,74 @@ public class Page_ApplicationStatus {
         h.setForeground(UI_Constants.TEXT_PRIMARY);
         h.setAlignmentX(Component.LEFT_ALIGNMENT);
         return h;
+    }
+
+    /** 取消按钮：仅在 pending 状态时显示 */
+    private JPanel buildCancelCard(Application app) {
+        String cur = app.getStatus() != null ? app.getStatus().getCurrent() : "";
+        if (!"pending".equalsIgnoreCase(cur)) {
+            return new JPanel();
+        }
+
+        JPanel card = createCardShell();
+        card.setLayout(new BorderLayout(0, 12));
+        card.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, card.getPreferredSize().height));
+
+        JPanel textSide = new JPanel();
+        textSide.setLayout(new BoxLayout(textSide, BoxLayout.Y_AXIS));
+        textSide.setOpaque(false);
+
+        JLabel heading = new JLabel("Withdraw Application");
+        heading.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        heading.setForeground(UI_Constants.TEXT_PRIMARY);
+        heading.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textSide.add(heading);
+
+        textSide.add(Box.createVerticalStrut(6));
+        JLabel hint = new JLabel(
+            "If you no longer wish to pursue this position, you can withdraw your application. " +
+            "This action cannot be undone.");
+        hint.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        hint.setForeground(UI_Constants.TEXT_SECONDARY);
+        hint.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textSide.add(hint);
+
+        card.add(textSide, BorderLayout.CENTER);
+
+        JButton cancelBtn = new JButton("Withdraw Application");
+        cancelBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        cancelBtn.setForeground(Color.WHITE);
+        cancelBtn.setBackground(UI_Constants.DANGER_COLOR);
+        cancelBtn.setOpaque(true);
+        cancelBtn.setFocusPainted(false);
+        cancelBtn.setBorderPainted(false);
+        cancelBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        cancelBtn.setBorder(new EmptyBorder(10, 20, 10, 20));
+        cancelBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        cancelBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cancelBtn.setBackground(new Color(185, 28, 28));
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cancelBtn.setBackground(UI_Constants.DANGER_COLOR);
+            }
+        });
+        cancelBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                panel,
+                "Are you sure you want to withdraw this application?\nThis action cannot be undone.",
+                "Confirm Withdrawal",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+            if (confirm == JOptionPane.YES_OPTION) {
+                callback.onCancelled();
+            }
+        });
+
+        card.add(cancelBtn, BorderLayout.EAST);
+        return card;
     }
 
     private JPanel createCardShell() {

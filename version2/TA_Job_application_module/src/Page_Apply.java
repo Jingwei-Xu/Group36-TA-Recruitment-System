@@ -304,6 +304,14 @@ public class Page_Apply {
         });
 
         submitBtn.addActionListener(e -> {
+            // 防止重复申请：进入页面后用户又手动提交的情况
+            if (dataService.hasAppliedToJob(job.getJobId())) {
+                showCenteredMessage(panel,
+                    "You have already submitted an application for this position.\n\nPlease check your application status in 'My Applications'.",
+                    "Already Applied", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
             if (fullNameField.getText().trim().isEmpty()
                 || studentIdField.getText().trim().isEmpty()
                 || emailField.getText().trim().isEmpty()

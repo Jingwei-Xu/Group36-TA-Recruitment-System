@@ -23,8 +23,10 @@ public class Page_JobDetail {
     
     private JPanel panel;
     private JobDetailCallback callback;
+    private DataService dataService;
     
-    public Page_JobDetail(JobDetailCallback callback) {
+    public Page_JobDetail(DataService dataService, JobDetailCallback callback) {
+        this.dataService = dataService;
         this.callback = callback;
         initPanel();
     }
@@ -241,9 +243,17 @@ public class Page_JobDetail {
         addSummaryBlock(card, "Location / Mode", buildLocationSummary(job));
         
         card.add(Box.createVerticalGlue());
-        JButton applyBtn = UI_Helper.createPrimaryButton("Apply Now");
-        applyBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        applyBtn.addActionListener(e -> callback.onApply(job));
+        boolean alreadyApplied = dataService != null && dataService.hasAppliedToJob(job.getJobId());
+        JButton applyBtn;
+        if (alreadyApplied) {
+            applyBtn = UI_Helper.createSecondaryButton("Already Applied");
+            applyBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+            applyBtn.setEnabled(false);
+        } else {
+            applyBtn = UI_Helper.createPrimaryButton("Apply Now");
+            applyBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+            applyBtn.addActionListener(e -> callback.onApply(job));
+        }
         applyBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         applyBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         card.add(Box.createVerticalStrut(12));

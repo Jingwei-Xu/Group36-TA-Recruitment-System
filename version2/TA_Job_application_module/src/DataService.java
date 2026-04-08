@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -47,17 +48,22 @@ public class DataService {
      * 获取Jobs文件夹的绝对路径，尝试多个可能的位置
      */
     private File findJobsDirectory() {
-        // 尝试的路径列表（按优先级从高到低）
-        String userDir = System.getProperty("user.dir");
+        // 获取 Main.class 所在的目录（bin目录）
+        String classPath = System.getProperty("java.class.path");
+        String binDir;
+        try {
+            binDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getAbsolutePath();
+        } catch (Exception e) {
+            binDir = System.getProperty("user.dir");
+        }
+        
         String[][] possiblePaths = {
-            // 0. 父级目录的 data/jobs（src/data，与 version2 同级）
-            { userDir + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "父级src目录（3级）" },
-            // 1. system根目录下的data/jobs（用户最可能的数据位置）
-            { userDir + File.separator + "data" + File.separator + "jobs", "system根目录" },
-            // 2. ta-portal/data/jobs（相对于ta-portal模块）
-            { userDir + File.separator + "ta-portal" + File.separator + "data" + File.separator + "jobs", "ta-portal目录" },
-            // 3. 相对路径 ../../../data/jobs（从src向上3级）
-            { ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "相对路径（3级）" }
+            // 0. bin 的父目录（项目根目录）下的 data/jobs
+            { binDir + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "项目根目录" },
+            // 1. bin 的父目录的上一级 src/data/jobs（如果从src运行）
+            { binDir + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "jobs", "src目录" },
+            // 2. system根目录下的data/jobs
+            { "C:" + File.separator + "Users" + File.separator + "35375" + File.separator + "Desktop" + File.separator + "software" + File.separator + "src" + File.separator + "data" + File.separator + "jobs", "固定路径" }
         };
         
         for (String[] pathInfo : possiblePaths) {
@@ -84,12 +90,18 @@ public class DataService {
      * 获取Applications文件夹的绝对路径，尝试多个可能的位置
      */
     private File findApplicationsDirectory() {
-        String userDir = System.getProperty("user.dir");
+        // 获取 Main.class 所在的目录（bin目录）
+        String binDir;
+        try {
+            binDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getAbsolutePath();
+        } catch (Exception e) {
+            binDir = System.getProperty("user.dir");
+        }
+        
         String[][] possiblePaths = {
-            { userDir + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "applications", "父级src目录（3级）" },
-            { userDir + File.separator + "data" + File.separator + "applications", "system根目录" },
-            { userDir + File.separator + "ta-portal" + File.separator + "data" + File.separator + "applications", "ta-portal目录" },
-            { ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "applications", "相对路径（3级）" }
+            { binDir + File.separator + ".." + File.separator + "data" + File.separator + "applications", "项目根目录" },
+            { binDir + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + "applications", "src目录" },
+            { "C:" + File.separator + "Users" + File.separator + "35375" + File.separator + "Desktop" + File.separator + "software" + File.separator + "src" + File.separator + "data" + File.separator + "applications", "固定路径" }
         };
 
         for (String[] pathInfo : possiblePaths) {
@@ -633,6 +645,13 @@ public class DataService {
             .toList();
     }
 
+    /** 检查当前用户是否已对该职位提交过申请（任意状态均可） */
+    public boolean hasAppliedToJob(String jobId) {
+        return applications.stream()
+            .anyMatch(a -> currentUser.getUserId().equals(a.getUserId())
+                        && jobId.equals(a.getJobId()));
+    }
+
     public Job getJobById(String jobId) {
         return jobs.stream()
             .filter(j -> j.getJobId().equals(jobId))
@@ -690,6 +709,48 @@ public class DataService {
         TAUser.ApplicationSummary summary = currentUser.getApplicationSummary();
         summary.setTotalApplications(summary.getTotalApplications() + 1);
         summary.setPending(summary.getPending() + 1);
+    }
+
+    /**
+     * 取消申请：将申请标记为已删除，加入取消时间线事件，更新状态。
+     * @return true 取消成功；false 申请不存在或非 pending 状态无法取消。
+     */
+    public boolean cancelApplication(String applicationId) {
+        Application app = getApplicationById(applicationId);
+        if (app == null) {
+            return false;
+        }
+        String cur = app.getStatus() != null ? app.getStatus().getCurrent() : "";
+        if (!"pending".equalsIgnoreCase(cur)) {
+            return false;
+        }
+
+        app.getStatus().setCurrent("cancelled");
+        app.getStatus().setLabel("Cancelled");
+        app.getStatus().setColor("gray");
+        app.getStatus().setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+        if (app.getMeta() != null) {
+            app.getMeta().setIsDeleted(true);
+            app.getMeta().setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        }
+
+        List<Application.TimelineEvent> timeline = app.getTimeline();
+        if (timeline == null) {
+            timeline = new ArrayList<>();
+            app.setTimeline(timeline);
+        }
+        Application.TimelineEvent ev = new Application.TimelineEvent();
+        ev.setTimelineId("tl_" + System.currentTimeMillis());
+        ev.setStepKey("cancelled");
+        ev.setStepLabel("Application Withdrawn");
+        ev.setStatus("completed");
+        ev.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        ev.setNote("Application was withdrawn by the applicant.");
+        timeline.add(ev);
+
+        saveApplicationToFile(app);
+        return true;
     }
 
     public int countApplicationsByStatus(String status) {

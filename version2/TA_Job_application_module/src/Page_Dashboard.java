@@ -26,15 +26,21 @@ public class Page_Dashboard {
     }
 
     private static final int CARD_ARC = 12;
-    private static final int OUTER_PAD_V = 20;
+    private static final int OUTER_PAD_V = 28;
     private static final int OUTER_PAD_H = 22;
-    private static final int CARD_GAP = 20;
+    private static final int CARD_GAP = 16;
     private static final int SECTION_GAP = 18;
 
     /** 固定英文区域，避免默认区域在月份处输出不可见/缺字字符，JTextArea 显示为方块 */
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
 
+    /** Overview 更新时间：与 DTF 一致使用英文区域，避免 “Apr” 等月份在部分字体下显示为 □ */
+    private static final DateTimeFormatter UPDATE_TIME_FMT =
+        DateTimeFormatter.ofPattern("MMM d, HH:mm", Locale.ENGLISH);
+
     private JPanel panel;
+    /** 中间区域（含 Overview），用于可靠替换底部状态卡片 */
+    private JPanel bodyPanel;
     private TAUser currentUser;
     private NavigationCallback callback;
     private DataService dataService;
@@ -50,6 +56,40 @@ public class Page_Dashboard {
         return panel;
     }
 
+    /** 从 DataService 重新拉取申请与职位数据并重建 Overview（提交成功或回到 Home 时调用） */
+    public void refreshOverview() {
+        if (bodyPanel == null) {
+            return;
+        }
+        BorderLayout bl = (BorderLayout) bodyPanel.getLayout();
+        Component old = bl.getLayoutComponent(BorderLayout.SOUTH);
+        if (old != null) {
+            bodyPanel.remove(old);
+        }
+        bodyPanel.add(buildQuickStatusCard(), BorderLayout.SOUTH);
+        bodyPanel.revalidate();
+        bodyPanel.repaint();
+    }
+
+    /** 与 JSON / 代码中可能出现的写法统一（如 under_review vs "under review"） */
+    private static String normalizeStatusBucket(Application a) {
+        if (a == null || a.getStatus() == null) {
+            return "other";
+        }
+        String raw = a.getStatus().getCurrent();
+        if (raw == null || raw.isEmpty()) {
+            return "other";
+        }
+        String c = raw.trim().toLowerCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
+        return switch (c) {
+            case "pending" -> "pending";
+            case "under_review", "underreview" -> "under_review";
+            case "accepted" -> "accepted";
+            case "rejected" -> "rejected";
+            default -> "other";
+        };
+    }
+
     private void initPanel() {
         panel = new JPanel(new BorderLayout(0, SECTION_GAP));
         panel.setBackground(UI_Constants.BG_COLOR);
@@ -57,20 +97,40 @@ public class Page_Dashboard {
 
         panel.add(buildHeader(), BorderLayout.NORTH);
 
-        // BorderLayout：中间卡片区占满剩余高度，底部 Overview 按内容高度展示，避免 GridBag 挤压导致裁切
-        JPanel body = new JPanel(new BorderLayout(0, SECTION_GAP));
-        body.setOpaque(false);
+        // 中间：两卡片仅占用内容高度，剩余纵向空间由透明填充区吸收（避免 GridLayout 把卡片拉满整屏）
+        bodyPanel = new JPanel(new BorderLayout(0, SECTION_GAP));
+        bodyPanel.setOpaque(false);
 
-        JPanel cardsRow = new JPanel(new GridLayout(1, 2, CARD_GAP, 0));
-        cardsRow.setOpaque(false);
-        cardsRow.add(buildProfileModuleCard());
-        cardsRow.add(buildJobModuleCard());
-        body.add(cardsRow, BorderLayout.CENTER);
+        JPanel cardsArea = new JPanel(new GridBagLayout());
+        cardsArea.setOpaque(false);
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.gridy = 0;
+        gc.weighty = 0;
+        gc.anchor = GridBagConstraints.NORTH;
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.insets = new Insets(0, 0, 0, CARD_GAP / 2);
+        gc.gridx = 0;
+        gc.weightx = 0.5;
+        cardsArea.add(buildProfileModuleCard(), gc);
+        gc.gridx = 1;
+        gc.insets = new Insets(0, CARD_GAP / 2, 0, 0);
+        cardsArea.add(buildJobModuleCard(), gc);
+        gc.gridx = 0;
+        gc.gridy = 1;
+        gc.gridwidth = 2;
+        gc.weightx = 1;
+        gc.weighty = 1;
+        gc.fill = GridBagConstraints.BOTH;
+        gc.insets = new Insets(0, 0, 0, 0);
+        JPanel verticalFiller = new JPanel();
+        verticalFiller.setOpaque(false);
+        cardsArea.add(verticalFiller, gc);
 
-        JPanel statusCard = buildQuickStatusCard();
-        body.add(statusCard, BorderLayout.SOUTH);
+        bodyPanel.add(cardsArea, BorderLayout.CENTER);
 
-        panel.add(body, BorderLayout.CENTER);
+        bodyPanel.add(buildQuickStatusCard(), BorderLayout.SOUTH);
+
+        panel.add(bodyPanel, BorderLayout.CENTER);
     }
 
     private JPanel buildHeader() {
@@ -78,14 +138,14 @@ public class Page_Dashboard {
         top.setOpaque(false);
 
         JLabel titleMain = new JLabel("TA Dashboard");
-        titleMain.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        titleMain.setFont(new Font("Segoe UI", Font.BOLD, 46));
         titleMain.setForeground(UI_Constants.TEXT_PRIMARY);
         top.add(titleMain, BorderLayout.NORTH);
 
         JLabel subtitle = new JLabel("Welcome! Please select a function module to get started.");
-        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         subtitle.setForeground(UI_Constants.TEXT_SECONDARY);
-        subtitle.setBorder(new EmptyBorder(8, 0, 0, 0));
+        subtitle.setBorder(new EmptyBorder(12, 0, 0, 0));
         top.add(subtitle, BorderLayout.SOUTH);
         return top;
     }
@@ -93,7 +153,7 @@ public class Page_Dashboard {
     private JPanel buildProfileModuleCard() {
         RoundedPanel card = new RoundedPanel(CARD_ARC, UI_Constants.BORDER_COLOR);
         card.setLayout(new BorderLayout());
-        card.setBorder(new EmptyBorder(20, 22, 20, 22));
+        card.setBorder(new EmptyBorder(22, 24, 22, 24));
 
         JPanel stack = new JPanel();
         stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
@@ -103,38 +163,37 @@ public class Page_Dashboard {
             new Color(219, 234, 254), UI_Constants.INFO_COLOR);
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         stack.add(header);
-        stack.add(Box.createVerticalStrut(8));
+        stack.add(Box.createVerticalStrut(10));
 
         String profileBody = ""
             + "Keep your profile current: name, contact, and academic background help departments match you to the right TA role.\n\n"
             + "Upload your CV and tag relevant skills so reviewers see your strengths at a glance.\n\n"
-            + "A complete profile unlocks the full job catalog and speeds up future applications.";
-        JScrollPane descSp = wrapCardDescription(profileBody);
+            + "A complete profile speeds up applications and helps you stand out.";
+        JScrollPane descSp = wrapCardDescription(profileBody, 6);
         descSp.setAlignmentX(Component.LEFT_ALIGNMENT);
         stack.add(descSp);
 
-        stack.add(Box.createVerticalStrut(12));
+        stack.add(Box.createVerticalStrut(14));
 
         JButton goProfile = UI_Helper.createDarkButtonLarge("Go to Profile");
-        goProfile.setPreferredSize(new Dimension(0, 48));
-        goProfile.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        goProfile.setPreferredSize(new Dimension(0, 46));
+        goProfile.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         goProfile.addActionListener(e -> callback.goToProfile());
         JPanel btnWrap = new JPanel(new BorderLayout());
         btnWrap.setOpaque(false);
         btnWrap.setAlignmentX(Component.LEFT_ALIGNMENT);
-        btnWrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        btnWrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         btnWrap.add(goProfile, BorderLayout.CENTER);
         stack.add(btnWrap);
 
-        stack.add(Box.createVerticalGlue());
-        card.add(stack, BorderLayout.CENTER);
+        card.add(stack, BorderLayout.NORTH);
         return card;
     }
 
     private JPanel buildJobModuleCard() {
         RoundedPanel card = new RoundedPanel(CARD_ARC, UI_Constants.BORDER_COLOR);
         card.setLayout(new BorderLayout());
-        card.setBorder(new EmptyBorder(20, 22, 20, 22));
+        card.setBorder(new EmptyBorder(22, 24, 22, 24));
 
         JPanel stack = new JPanel();
         stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
@@ -144,34 +203,33 @@ public class Page_Dashboard {
             new Color(209, 250, 229), UI_Constants.SUCCESS_COLOR);
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         stack.add(header);
-        stack.add(Box.createVerticalStrut(8));
+        stack.add(Box.createVerticalStrut(10));
 
         String jobBody = ""
             + "Browse open TA roles across departments. Filter by course, hours, or work mode, then apply in a guided flow.\n\n"
-            + "Track every submission from pending through review to a final decision\u2014all in one timeline.\n\n"
-            + "Deadline hints on the dashboard help you prioritize roles before they close.";
-        JScrollPane descSp = wrapCardDescription(jobBody);
+            + "Track every submission from pending through review to a final decision.\n\n"
+            + "Deadline hints on the dashboard help you prioritize before listings close.";
+        JScrollPane descSp = wrapCardDescription(jobBody, 6);
         descSp.setAlignmentX(Component.LEFT_ALIGNMENT);
         stack.add(descSp);
 
-        stack.add(Box.createVerticalStrut(12));
+        stack.add(Box.createVerticalStrut(14));
 
         JPanel jobActions = new JPanel(new GridLayout(1, 2, 12, 0));
         jobActions.setOpaque(false);
         jobActions.setAlignmentX(Component.LEFT_ALIGNMENT);
-        jobActions.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        jobActions.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         JButton browseJobsBtn = UI_Helper.createDarkButtonLarge("Browse Jobs");
-        browseJobsBtn.setPreferredSize(new Dimension(0, 48));
+        browseJobsBtn.setPreferredSize(new Dimension(0, 46));
         browseJobsBtn.addActionListener(e -> callback.goToJobs());
         JButton myAppsBtn = UI_Helper.createOutlineButton("My Applications");
-        myAppsBtn.setPreferredSize(new Dimension(0, 48));
+        myAppsBtn.setPreferredSize(new Dimension(0, 46));
         myAppsBtn.addActionListener(e -> callback.goToApplications());
         jobActions.add(browseJobsBtn);
         jobActions.add(myAppsBtn);
         stack.add(jobActions);
 
-        stack.add(Box.createVerticalGlue());
-        card.add(stack, BorderLayout.CENTER);
+        card.add(stack, BorderLayout.NORTH);
         return card;
     }
 
@@ -189,16 +247,16 @@ public class Page_Dashboard {
                 g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 10, 10));
             }
         };
-        iconPanel.setPreferredSize(new Dimension(56, 56));
+        iconPanel.setPreferredSize(new Dimension(60, 60));
         iconPanel.setOpaque(false);
         iconPanel.setLayout(new GridBagLayout());
         JLabel iconLbl = new JLabel(icon);
-        iconLbl.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        iconLbl.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 34));
         iconLbl.setForeground(iconFg);
         iconPanel.add(iconLbl);
 
         JLabel titleLbl = new JLabel(title);
-        titleLbl.setFont(new Font("Segoe UI", Font.BOLD, 21));
+        titleLbl.setFont(new Font("Segoe UI", Font.BOLD, 30));
         titleLbl.setForeground(UI_Constants.TEXT_PRIMARY);
         header.add(iconPanel);
         header.add(titleLbl);
@@ -206,16 +264,16 @@ public class Page_Dashboard {
     }
 
     /** 模块说明：Segoe UI + 自动换行，避免 HTML 默认衬线体与裁切 */
-    private static JScrollPane wrapCardDescription(String text) {
+    private static JScrollPane wrapCardDescription(String text, int rows) {
         JTextArea ta = new JTextArea(text);
-        ta.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        ta.setFont(new Font("Segoe UI", Font.PLAIN, 17));
         ta.setForeground(new Color(0x4B5563));
         ta.setOpaque(false);
         ta.setEditable(false);
         ta.setFocusable(false);
         ta.setWrapStyleWord(true);
         ta.setLineWrap(true);
-        ta.setRows(10);
+        ta.setRows(rows);
         ta.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 8));
         ta.setHighlighter(null);
         JScrollPane sp = new JScrollPane(ta);
@@ -229,34 +287,51 @@ public class Page_Dashboard {
         return sp;
     }
 
+    /** 默认行数的重载方法（兼容现有调用） */
+    private static JScrollPane wrapCardDescription(String text) {
+        return wrapCardDescription(text, 10);
+    }
+
     /** 实时从 DataService 读取数据构建 Quick Status 卡片 */
     private JPanel buildQuickStatusCard() {
         RoundedPanel outer = new RoundedPanel(CARD_ARC, UI_Constants.BORDER_COLOR);
-        outer.setLayout(new BorderLayout(0, 12));
+        outer.setLayout(new BorderLayout(0, 14));
         outer.setBorder(new EmptyBorder(20, 24, 24, 24));
 
+        JPanel headerRow = new JPanel(new BorderLayout());
+        headerRow.setOpaque(false);
+
         JLabel statusTitle = new JLabel("Quick Status Overview");
-        statusTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        statusTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
         statusTitle.setForeground(UI_Constants.TEXT_PRIMARY);
-        outer.add(statusTitle, BorderLayout.NORTH);
+
+        JLabel updateTime = new JLabel("Updated: " + java.time.LocalDateTime.now().format(UPDATE_TIME_FMT));
+        updateTime.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        updateTime.setForeground(UI_Constants.TEXT_SECONDARY);
+        updateTime.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        headerRow.add(statusTitle, BorderLayout.WEST);
+        headerRow.add(updateTime, BorderLayout.EAST);
+        outer.add(headerRow, BorderLayout.NORTH);
 
         // 实时读取
         var userApps = dataService.getUserApplications();
         var openJobs = dataService.getOpenJobs();
         Map<String, Long> statusCount = userApps.stream()
-            .collect(Collectors.groupingBy(
-                a -> a.getStatus().getCurrent(), Collectors.counting()));
+            .collect(Collectors.groupingBy(Page_Dashboard::normalizeStatusBucket, Collectors.counting()));
 
         long pending    = statusCount.getOrDefault("pending", 0L);
-        long inReview   = statusCount.getOrDefault("under review", 0L);
+        long inReview   = statusCount.getOrDefault("under_review", 0L);
         long accepted   = statusCount.getOrDefault("accepted", 0L);
         long rejected   = statusCount.getOrDefault("rejected", 0L);
+        long other      = statusCount.getOrDefault("other", 0L);
         long total      = userApps.size();
         long openCount  = openJobs.size();
 
-        // 各卡片的次要提示信息
+        // 各卡片的次要提示信息（分项之和与 total 一致）
         String appSummary = "Pending " + pending + " · In review " + inReview
-            + " · Accepted " + accepted + " · Rejected " + rejected;
+            + " · Accepted " + accepted + " · Rejected " + rejected
+            + (other > 0 ? " · Other " + other : "");
 
         String cvHint;
         TAUser.CV cv = currentUser.getCv();
@@ -340,9 +415,9 @@ public class Page_Dashboard {
                                    String label, String value, String subline) {
         JPanel cell = new JPanel(new BorderLayout(0, 0));
         cell.setOpaque(false);
-        cell.setBorder(new EmptyBorder(8, 10, 12, 10));
+        cell.setBorder(new EmptyBorder(10, 12, 14, 12));
 
-        final int chipSize = 52;
+        final int chipSize = 60;
         JPanel chip = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -365,7 +440,7 @@ public class Page_Dashboard {
         chip.setOpaque(false);
         chip.setLayout(new GridBagLayout());
         JLabel sym = new JLabel(symbol, SwingConstants.CENTER);
-        sym.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
+        sym.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 24));
         sym.setForeground(symbolColor);
         chip.add(sym);
 
@@ -373,15 +448,15 @@ public class Page_Dashboard {
         chipWrap.setOpaque(false);
         chipWrap.add(chip);
 
-        JPanel textCol = new JPanel(new BorderLayout(0, 6));
+        JPanel textCol = new JPanel(new BorderLayout(0, 4));
         textCol.setOpaque(false);
 
         JLabel lab = new JLabel(label);
-        lab.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lab.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         lab.setForeground(UI_Constants.TEXT_SECONDARY);
 
         JLabel val = new JLabel(value);
-        val.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        val.setFont(new Font("Segoe UI", Font.BOLD, 28));
         val.setForeground(UI_Constants.TEXT_PRIMARY);
 
         JTextArea sub = new JTextArea(subline == null ? "" : subline);
@@ -405,7 +480,7 @@ public class Page_Dashboard {
         textCol.add(topStack, BorderLayout.NORTH);
         textCol.add(sub, BorderLayout.CENTER);
 
-        JPanel inner = new JPanel(new BorderLayout(14, 0));
+        JPanel inner = new JPanel(new BorderLayout(16, 0));
         inner.setOpaque(false);
         inner.add(chipWrap, BorderLayout.WEST);
         inner.add(textCol, BorderLayout.CENTER);

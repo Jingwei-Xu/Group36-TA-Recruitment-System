@@ -166,11 +166,15 @@ public class Page_Jobs {
         jobListCountLabel = new JLabel(" ");
         jobListCountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         jobListCountLabel.setForeground(UI_Constants.TEXT_SECONDARY);
+        jobListCountLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        jobListCountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         jobListCountLabel.setBorder(new EmptyBorder(12, 0, 16, 0));
-        // BoxLayout.Y_AXIS 会按子组件首选宽度水平居中；窄行需拉满宽度才能左对齐
-        JPanel countRow = new JPanel(new BorderLayout());
+        // 垂直 BoxLayout 易把窄行水平居中；用 X 轴 + 右侧 glue 占满宽度，保证文字贴左
+        JPanel countRow = new JPanel();
+        countRow.setLayout(new BoxLayout(countRow, BoxLayout.X_AXIS));
         countRow.setOpaque(false);
-        countRow.add(jobListCountLabel, BorderLayout.WEST);
+        countRow.add(jobListCountLabel);
+        countRow.add(Box.createHorizontalGlue());
         countRow.setAlignmentX(Component.LEFT_ALIGNMENT);
         Dimension countPref = countRow.getPreferredSize();
         countRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, countPref.height));
@@ -298,6 +302,8 @@ public class Page_Jobs {
                 jobsListPanel.add(Box.createVerticalStrut(20));
             }
         }
+        // 视口高于内容时 JViewport 会拉高列表面板；底部 glue 吃掉多余高度，避免单条职位卡片被纵向撑满
+        jobsListPanel.add(Box.createVerticalGlue());
         
         jobsListPanel.revalidate();
         jobsListPanel.repaint();
@@ -376,19 +382,16 @@ public class Page_Jobs {
         footer.add(createMetaChip("Location:", job.getLocationMode()));
         left.add(footer);
         
-        card.add(left, BorderLayout.CENTER);
+        // NORTH：卡片若被拉高时只拉伸下方空白，不把摘要区撑成大片留白
+        card.add(left, BorderLayout.NORTH);
         
         JButton viewBtn = UI_Helper.createDarkButton("View Details  >");
         viewBtn.setPreferredSize(new Dimension(160, 44));
         viewBtn.addActionListener(e -> callback.onViewJobDetail(job));
-        JPanel btnCol = new JPanel(new GridBagLayout());
-        btnCol.setOpaque(false);
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 0;
-        c.anchor = GridBagConstraints.CENTER;
-        btnCol.add(viewBtn, c);
-        card.add(btnCol, BorderLayout.EAST);
+        JPanel eastWrap = new JPanel(new BorderLayout());
+        eastWrap.setOpaque(false);
+        eastWrap.add(viewBtn, BorderLayout.NORTH);
+        card.add(eastWrap, BorderLayout.EAST);
         
         return card;
     }

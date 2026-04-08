@@ -190,7 +190,7 @@ public class TAPortalApp extends JFrame {
         mainContentPanel.add(jobsPage.getPanel(), "jobs");
         
         // Job Detail Page
-        jobDetailPage = new Page_JobDetail(new Page_JobDetail.JobDetailCallback() {
+        jobDetailPage = new Page_JobDetail(dataService, new Page_JobDetail.JobDetailCallback() {
             @Override
             public void onBackToJobs() { showPage("jobs"); }
             @Override
@@ -212,6 +212,7 @@ public class TAPortalApp extends JFrame {
             }
             @Override
             public void onSubmitSuccess() {
+                dashboardPage.refreshOverview();
                 myApplicationsPage.refreshTable();
                 showPage("applications");
             }
@@ -243,6 +244,17 @@ public class TAPortalApp extends JFrame {
         applicationStatusPage = new Page_ApplicationStatus(new Page_ApplicationStatus.StatusCallback() {
             @Override
             public void onBackToApplications() { showPage("applications"); }
+
+            @Override
+            public void onCancelled() {
+                String appId = applicationStatusPage.getCurrentApplicationId();
+                if (appId != null) {
+                    dataService.cancelApplication(appId);
+                }
+                myApplicationsPage.refreshTable();
+                dashboardPage.refreshOverview();
+                showPage("applications");
+            }
         });
         applicationStatusScroll = wrapContentInScrollPane(applicationStatusPage.getPanel());
         mainContentPanel.add(applicationStatusScroll, "status");
@@ -265,7 +277,9 @@ public class TAPortalApp extends JFrame {
 
     private void showPage(String pageName) {
         // 刷新数据
-        if (pageName.equals("applications")) {
+        if (pageName.equals("dashboard")) {
+            dashboardPage.refreshOverview();
+        } else if (pageName.equals("applications")) {
             myApplicationsPage.refreshTable();
         } else if (pageName.equals("jobs")) {
             jobsPage.refreshJobs();
