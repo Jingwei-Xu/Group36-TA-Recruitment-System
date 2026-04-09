@@ -237,6 +237,13 @@ public class TAPortalApp extends JFrame {
             public void onBrowseJobs() {
                 showPage("jobs");
             }
+
+            @Override
+            public void onCancelApplication(Application application) {
+                dataService.cancelApplication(application.getApplicationId());
+                myApplicationsPage.refreshTable();
+                dashboardPage.refreshOverview();
+            }
         });
         mainContentPanel.add(myApplicationsPage.getPanel(), "applications");
         

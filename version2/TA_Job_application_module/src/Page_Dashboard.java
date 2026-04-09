@@ -86,6 +86,7 @@ public class Page_Dashboard {
             case "under_review", "underreview" -> "under_review";
             case "accepted" -> "accepted";
             case "rejected" -> "rejected";
+            case "cancelled" -> "cancelled";
             default -> "other";
         };
     }
@@ -324,13 +325,15 @@ public class Page_Dashboard {
         long inReview   = statusCount.getOrDefault("under_review", 0L);
         long accepted   = statusCount.getOrDefault("accepted", 0L);
         long rejected   = statusCount.getOrDefault("rejected", 0L);
+        long cancelled  = statusCount.getOrDefault("cancelled", 0L);
         long other      = statusCount.getOrDefault("other", 0L);
-        long total      = userApps.size();
+        long total      = userApps.size() - cancelled;
         long openCount  = openJobs.size();
 
         // 各卡片的次要提示信息（分项之和与 total 一致）
         String appSummary = "Pending " + pending + " · In review " + inReview
             + " · Accepted " + accepted + " · Rejected " + rejected
+            + (cancelled > 0 ? " · Cancelled " + cancelled : "")
             + (other > 0 ? " · Other " + other : "");
 
         String cvHint;

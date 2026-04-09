@@ -34,6 +34,7 @@ public class Page_MyApplications {
         void onViewStatus(Application application);
         void onBackToHome();
         void onBrowseJobs();
+        void onCancelApplication(Application application);
     }
 
     private static final String PLACEHOLDER_SEARCH = "Search by job title...";
@@ -41,7 +42,7 @@ public class Page_MyApplications {
     /** 与列宽匹配的 HTML 换行最小宽度（列变宽时会用更大值） */
     private static final int JOB_TITLE_WRAP_INNER_PX = 248;
     /** 第 2–7 列固定宽度（STATUS 列 = BADGE_OUTER_WIDTH+24，见 StatusBadgeRenderer） */
-    private static final int[] REST_COL_WIDTHS = {96, 200, 140, 192, 140, 88};
+    private static final int[] REST_COL_WIDTHS = {96, 200, 140, 192, 140, 88, 100};
 
     private JPanel panel;
     private JPanel northStack;
@@ -298,7 +299,7 @@ public class Page_MyApplications {
     }
 
     private void buildTable() {
-        String[] columns = {"JOB TITLE", "COURSE", "DEPARTMENT", "APPLIED DATE", "STATUS", "LAST UPDATED", "ACTION"};
+        String[] columns = {"JOB TITLE", "COURSE", "DEPARTMENT", "APPLIED DATE", "STATUS", "LAST UPDATED", "ACTION", "CANCEL"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -370,6 +371,8 @@ public class Page_MyApplications {
                 col.setCellRenderer(new StatusBadgeRenderer());
             } else if (i == 6) {
                 col.setCellRenderer(new ViewLinkRenderer());
+            } else if (i == 7) {
+                col.setCellRenderer(new CancelButtonRenderer());
             } else {
                 col.setCellRenderer(leftRenderer);
             }
@@ -378,6 +381,7 @@ public class Page_MyApplications {
         applyColumnWidths();
 
         final int actionCol = applicationsTable.getColumn("ACTION").getModelIndex();
+        final int cancelCol = applicationsTable.getColumn("CANCEL").getModelIndex();
         applicationsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -391,12 +395,26 @@ public class Page_MyApplications {
                     return;
                 }
                 int modelCol = applicationsTable.convertColumnIndexToModel(viewCol);
-                if (modelCol != actionCol) {
+                int modelRow = applicationsTable.convertRowIndexToModel(viewRow);
+                if (modelRow < 0 || modelRow >= displayedApplications.size()) {
                     return;
                 }
-                int modelRow = applicationsTable.convertRowIndexToModel(viewRow);
-                if (modelRow >= 0 && modelRow < displayedApplications.size()) {
+                if (modelCol == actionCol) {
                     callback.onViewStatus(displayedApplications.get(modelRow));
+                } else if (modelCol == cancelCol) {
+                    Application app = displayedApplications.get(modelRow);
+                    UIManager.put("OptionPane.yesButtonText", "Yes");
+                    UIManager.put("OptionPane.noButtonText", "No");
+                    int confirm = JOptionPane.showConfirmDialog(
+                        panel,
+                        "Are you sure you want to withdraw this application?\nThis action cannot be undone.",
+                        "Confirm Withdrawal",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                    );
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        callback.onCancelApplication(app);
+                    }
                 }
             }
         });
@@ -419,10 +437,10 @@ public class Page_MyApplications {
         SwingUtilities.invokeLater(this::syncJobTitleColumnToFillViewport);
     }
 
-    /** 第 2–7 列固定宽度；JOB TITLE 列用剩余宽度铺满视口（过窄时出现横向滚动条） */
+    /** 第 2–8 列固定宽度；JOB TITLE 列用剩余宽度铺满视口（过窄时出现横向滚动条） */
     private void applyColumnWidths() {
         TableColumnModel cm = applicationsTable.getColumnModel();
-        if (cm.getColumnCount() < 7) {
+        if (cm.getColumnCount() < 8) {
             return;
         }
         cm.getColumn(0).setMinWidth(JOB_TITLE_COL_MIN_WIDTH);
@@ -448,7 +466,7 @@ public class Page_MyApplications {
             return;
         }
         TableColumnModel cm = applicationsTable.getColumnModel();
-        if (cm.getColumnCount() < 7) {
+        if (cm.getColumnCount() < 8) {
             return;
         }
 
@@ -510,6 +528,8 @@ public class Page_MyApplications {
                 lastUp = formatDateOnly(app.getStatus().getLastUpdated(), outDate);
             }
 
+            boolean canCancel = "pending".equalsIgnoreCase(
+                app.getStatus() != null ? app.getStatus().getCurrent() : "");
             Object[] row = {
                 app.getJobSnapshot() != null ? app.getJobSnapshot().getTitle() : "",
                 app.getJobSnapshot() != null ? app.getJobSnapshot().getCourseCode() : "",
@@ -517,7 +537,8 @@ public class Page_MyApplications {
                 submitted,
                 statusLabel,
                 lastUp,
-                "view"
+                "view",
+                canCancel ? "withdraw" : ""
             };
             tableModel.addRow(row);
         }
@@ -610,6 +631,45 @@ public class Page_MyApplications {
             return wrap;
         }
     }
+
+    static class CancelButtonRenderer extends JPanel implements TableCellRenderer {
+        private final JButton btn = new JButton("Withdraw");
+
+        CancelButtonRenderer() {
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setOpaque(true);
+            setBackground(UI_Constants.CARD_BG);
+            btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            btn.setForeground(Color.WHITE);
+            btn.setBackground(UI_Constants.DANGER_COLOR);
+            btn.setOpaque(true);
+            btn.setFocusPainted(false);
+            btn.setBorderPainted(false);
+            btn.setBorder(new EmptyBorder(4, 10, 4, 10));
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            btn.setVisible(false);
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setBackground(table.getSelectionBackground());
+            } else {
+                setBackground(UI_Constants.CARD_BG);
+            }
+            boolean show = "withdraw".equals(value);
+            btn.setVisible(show);
+            removeAll();
+            if (show) {
+                add(Box.createHorizontalGlue());
+                add(btn);
+                add(Box.createHorizontalGlue());
+            }
+            return this;
+        }
+    }
+
 
     static class ViewLinkRenderer extends DefaultTableCellRenderer {
         @Override
