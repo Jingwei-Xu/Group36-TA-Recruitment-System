@@ -107,7 +107,7 @@ Functions:
 - System entry
 - Page navigation
 
-Branch:
+Branch:Yifan-Lang/Login_register
 
 ---
 
@@ -118,7 +118,7 @@ Functions:
 - Manage skill information
 - Upload CV
 
-Branch:
+Branch:Jingwei-Xu/TA_profile_module
 
 ---
 
@@ -130,7 +130,7 @@ Functions:
 - Apply for jobs
 - Check application status
 
-Branch:
+Branch:Motong-Long/TA_job_application_module
 
 ---
 
@@ -142,7 +142,7 @@ Functions:
 - Delete job postings
 - View job details
 
-Branch:
+Branch:Zihan-Guo/Mo_Job_Management
 
 ---
 
@@ -154,7 +154,7 @@ Functions:
 - Accept or reject applicants
 - Update application status
 
-Branch:
+Branch:Yuxin-Wang/Mo_application_review_module
 
 ---
 
@@ -165,7 +165,7 @@ Functions:
 - Display recruitment statistics
 - Provide entry point for AI-based recommendation and analysis
 
-Branch:
+Branch:Yifan-Cao/Admin-Module
 
 ---
 
@@ -177,12 +177,11 @@ README.md
 
 ```
 src
-├── auth
-├── ta_profile
-├── ta_application
-├── mo_job
-├── mo_review
-└── admin
+├── Admin_Module
+├── TA_Job_Application_Module
+├── profile_module
+├── Authentication_Module
+└── mosystem
 
 docs
 ├── prototype
@@ -191,10 +190,12 @@ docs
 └── Questionnaire
 
 data
-├── users.json
-├── profiles.json
-├── jobs.json
-└── applications.json
+├── users
+├── uploads
+├── system
+├── applications
+├── uploads
+└── jobs
 ```
 
 ## Iteration Progress
@@ -280,6 +281,11 @@ data
 | 2026-03-20 | @Jingwei-Xu | Jingwei-Xu/product-backlog | Integrate questionnaire results and group survey end user requirements, and complete the TA and MO sections of the Excel document |
 | 2026-03-21 | @Jingwei-Xu | Jingwei-Xu/product-backlog | Complete the Admin sections of the Excel document |
 | 2026-03-22 | @Jingwei-Xu | Jingwei-Xu/product-backlog | Update the final version of Excel document |
+| 2026-03-23 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Design software UI interface for profile module based on prototype |
+| 2026-03-25 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Connect various functional interfaces and ensure the implementation of each function |
+| 2026-03-26 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Adjust the button size, position, data storage location, and other details of the interface. Refactoring the folder structure |
+| 2026-03-29 | @Jingwei-Xu | version | Integrate the login registration page, TA, MO, and admin functions to complete the software integration. And test the various functions of the integrated software, modify vulnerabilities, and ensure the smooth operation and complete functionality of software version 1 |
+| 2026-03-30 | @Jingwei-Xu | version | Refactoring the folder structure of the integrated version of version 1 |
 
 
 
@@ -300,6 +306,13 @@ data
 | 2026-03-28 | @Longmotong |Motong-Long/TA_job_application_module  |Perform initial integration on the MO terminal, remove one of the dashboards, and establish initial connections |
 | 2026-03-29 | @Longmotong |Motong-Long/TA_job_application_module and data |Continue to complete the integration of the mo terminal, and establish basic connectivity with the login and registration system and also create more data examples |
 | 2026-03-30 | @Longmotong |Motong-Long/modify_readme|Summarize the issues found in integrating the mo terminal and registration/login aspects, and update the specific iteration plan in the readme |
+| 2026-4-4 | @Longmotong |Motong-Long/TA_job_application_module|Modify the TA work application module dashboard and work details page |
+| 2026-4-5 | @Longmotong |Motong-Long/TA_job_application_module|Modify the TA work application module job apply page |
+| 2026-4-6 | @Longmotong |Motong-Long/TA_job_application_module|Modify the TA work application module application detail page|
+| 2026-4-7 | @Longmotong |Motong-Long/TA_job_application_module|Modify the TA work application module overview presentation logic on dashboard |
+| 2026-4-8 | @Longmotong |Motong-Long/TA_job_application_module|add delete function of applications |
+| 2026-4-9 | @Longmotong |Motong-Long/TA_job_application_module|add draft box function|
+| 2026-4-10 | @Longmotong |Motong-Long/TA_job_application_module|Integrate the login system, TA-side functions, and admin-side functions |
 
 
 
@@ -326,6 +339,8 @@ data
 | 2026-03-24 | @rei129482 |Yifan-Cao/Admin_module  |Completed the initial structure design of the admin module in version 1  |
 | 2026-03-30 | @rei129482 |Yifan-Cao/Admin_module  |Updated the detailed implementation code for TA workload and report|
 | 2026-03-31 | @rei129482 |Yifan-Cao/Admin_module  |Updated and modified the folder structure and content|
+| 2026-04-07 | @rei129482 |Yifan-Cao/Admin_module  |Updated and modified the ui design|
+| 2026-04-09 | @rei129482 |Yifan-Cao/Admin_module  |Completed the final version of the admin module in version 2|
 
 ### Yuxin Wang
 | Date | Member | Location/Branch | Task Description |
@@ -339,12 +354,25 @@ data
 | 2026-03-25 | @Yuxin-Wang5 | Yuxin-Wang/MO_application_review_module | The dashboard page and the page/function components in the Application Review Module have been implemented, but the design shows significant differences from the prototype. |
 | 2026-03-26 | @Yuxin-Wang5 | Yuxin-Wang/MO_application_review_module | The first iteration version has implemented features such as one-click approval. However, it cannot yet automatically evaluate resumes or display working hours. |
 
+### Yifan Lang
+| Date | Member | Location/Branch | Task Description |
+| :--- | :--- | :--- | :--- |
+| 2026-03-17 | @djwcb666 | Yifan-Lang/Login_prototype | Complete the design of auth prototype |
+| 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Complete the code design for the login function |
+| 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Complete the code design for the register function |
+| 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Design the data storage and reading/writing functions |
+| 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Design the data storage and reading/writing functions |
+| 2026-03-24 | @djwcb666 | Yifan-Lang/login-register | Complete the front-end design of the login and registration pages |
+| 2026-03-26 | @djwcb666 | Yifan-Lang/login-register | Complete the design of the welcome page |
+| 2026-04-4 | @djwcb666 | Yifan-Lang/login-register | Sort out the problems existing in the front-end page |
+| 2026-04-9 | @djwcb666 | Yifan-Lang/login-register | Improve the logic of the registration interface |
+| 2026-04-10 | @djwcb666 | Yifan-Lang/login-register | Re-design all the front-end interfaces |
+
+
 ## How to Run the System
 
 1. Clone the repository
-```
-git clone repository-url
-```
+
 
 2. Open the project using an IDE such as **IntelliJ IDEA** or **Eclipse**
 
