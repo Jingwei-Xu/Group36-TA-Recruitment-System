@@ -240,7 +240,7 @@ data
 - On the Admin side, workload measurement rules and the reports function were not yet clear or complete.
 - Overall, Iteration 1 showed that completing individual module functions was not enough; stronger integration standards, more consistent UI design, and more reliable shared data handling were needed for later iterations.
 
-### Iteration 2
+### Iteration 2（3.30-4.11）
 #### Planned goals
 - Refactor and unify the codebase structure based on the integration problems found in Iteration 1, especially reducing inconsistency between modules and standardising the use of Java Swing.
 - Improve the overall UI consistency, including window size, button style, navigation behaviour, and back-button design across different modules.
