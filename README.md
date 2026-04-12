@@ -291,6 +291,7 @@ data
 | 2026-4-6 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module |Ensure the correct classification of skills added in the login guide interface, and add a status bar for viewing CV upload status |
 | 2026-4-8 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module |Fix some known bugs in the TA profile module and optimize the overall UI |
 | 2026-4-8 | @Jingwei-Xu | reflection |Organize the issues and reflections in version 1 |
+| 2026-4-11 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module |Merge the MO module with the merged TA, admin, login and registration interfaces, test the functionality of each interface, unify the overall UI style, and modify bugs |
 
 
 
