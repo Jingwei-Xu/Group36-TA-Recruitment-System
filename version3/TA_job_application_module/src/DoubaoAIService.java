@@ -27,34 +27,75 @@ public class DoubaoAIService {
         String prompt = buildMatchAnalysisPrompt(jobTitle, jobDescription, courseCode,
                 department, requiredSkills, userSkills, userGPA, userExperience);
 
-        return chat(prompt);
+        return chatWithLimit(prompt);
+    }
+
+    public String chatWithLimit(String userMessage) throws Exception {
+        URL url = URI.create(API_URL).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+        conn.setDoOutput(true);
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(90000);
+
+        String requestBody = String.format(
+                "{\n" +
+                "    \"model\": \"doubao-seed-1-8-251228\",\n" +
+                "    \"max_tokens\": 2000,\n" +
+                "    \"messages\": [\n" +
+                "        {\"role\": \"user\", \"content\": %s}\n" +
+                "    ]\n" +
+                "}",
+                escapeJson(userMessage)
+        );
+
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(requestBody.getBytes(StandardCharsets.UTF_8));
+        }
+
+        int responseCode = conn.getResponseCode();
+        String responseBody = readResponse(conn);
+
+        if (responseCode == 401) {
+            throw new Exception("API密钥无效，请检查配置。");
+        } else if (responseCode == 429) {
+            throw new Exception("请求频率受限，请稍后再试。");
+        } else if (responseCode != 200) {
+            throw new Exception("API请求失败，错误码：" + responseCode + "，响应：" + responseBody);
+        }
+
+        return parseChatResponse(responseBody);
     }
 
     private String buildMatchAnalysisPrompt(String jobTitle, String jobDescription, String courseCode,
                                            String department, String requiredSkills,
                                            String userSkills, String userGPA, String userExperience) {
         return String.format(
-                "You are a professional TA (Teaching Assistant) matching analysis expert. Please analyze the match between the TA applicant and the position based on the following information.\n\n" +
-                "[Position Information]\n" +
-                "- Position Title: %s\n" +
-                "- Course Code: %s\n" +
-                "- Department: %s\n" +
-                "- Job Description: %s\n" +
-                "- Required Skills: %s\n\n" +
-                "[Applicant Information]\n" +
-                "- Skills: %s\n" +
-                "- GPA: %s\n" +
-                "- Relevant Experience: %s\n\n" +
-                "Please analyze from the following aspects and provide a detailed matching report:\n\n" +
-                "1. Skills Match (30%%): Evaluate how well the applicant's skills match the position requirements\n" +
-                "2. Academic Background (25%%): Evaluate GPA and relevant course background\n" +
-                "3. Experience Match (25%%): Evaluate relevant teaching or research experience\n" +
-                "4. Overall Recommendation (20%%): Provide comprehensive evaluation and suggestions\n\n" +
-                "Please respond in English with a clear format that is easy to read.",
+                "You are a TA matching expert. Analyze the match between applicant and position. " +
+                "Respond ONLY in this exact JSON format (no other text):\n" +
+                "{\"matchScore\": 75, \"skillsMatch\": 80, \"gpaMatch\": 70, \"experienceMatch\": 60, " +
+                "\"summary\": \"The applicant has a moderate match with the position based on skill alignment, GPA, and relevant experience.\", " +
+                "\"strengths\": [\"Strong proficiency in Python with 3 years of hands-on experience in data structures and algorithms\", \"Excellent academic performance with a 3.8 GPA in computer science coursework\", \"Relevant teaching experience as a peer tutor for introductory programming courses\"], " +
+                "\"weaknesses\": [\"Limited exposure to specialized frameworks required by the course curriculum\", \"No prior formal teaching experience in a university setting\"], " +
+                "\"recommendations\": [\"Consider taking additional courses in the specific frameworks used in this course to strengthen your application\", \"Gain some teaching experience by applying for teaching assistant positions in introductory courses first\", \"Build a portfolio of relevant projects to demonstrate practical application of your skills in this subject area\"]}\n\n" +
+                "Position: %s (%s) - %s\n" +
+                "Requirements: %s\n" +
+                "Applicant Skills: %s | GPA: %s | Experience: %s\n\n" +
+                "Rules:\n" +
+                "- matchScore = weighted average (Skills 40%%, GPA 25%%, Experience 25%%, Other 10%%)\n" +
+                "- Focus on explicit skill/keyword matches between requirements and user skills\n" +
+                "- summary: Write 2-3 sentences explaining the overall match conclusion\n" +
+                "- strengths: Write each as a FULL COMPLETE SENTENCE that describes one specific strength, minimum 15 words per sentence\n" +
+                "- weaknesses: Write each as a FULL COMPLETE SENTENCE that describes one specific weakness, minimum 12 words per sentence\n" +
+                "- recommendations: Write each as a FULL COMPLETE SENTENCE starting with an action verb, minimum 15 words per sentence\n" +
+                "- IMPORTANT: Every item in strengths/weaknesses/recommendations MUST end with a period and be a grammatically complete sentence\n" +
+                "- Return ONLY the JSON, no markdown or explanation",
                 nullToEmpty(jobTitle),
                 nullToEmpty(courseCode),
                 nullToEmpty(department),
-                nullToEmpty(jobDescription),
                 nullToEmpty(requiredSkills),
                 nullToEmpty(userSkills),
                 nullToEmpty(userGPA),

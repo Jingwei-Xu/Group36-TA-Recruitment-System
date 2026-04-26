@@ -20,23 +20,23 @@ public class DataService {
     private List<Application> applications;
     private int nextApplicationId = 2;
     private final Gson gson;
+
+    // AI分析结果缓存（持久化到用户数据）
+    private List<JobMatchResult> cachedAIResults = null;
     
     
     public void initializeUserFromAuth(String username, String role) {
-    
         TAUser loaded = loadAuthUserFromFile(username, role);
-
         if (loaded != null) {
-           
             this.currentUser = loaded;
         } else {
-            
             this.currentUser = buildPlaceholderUser(username, role);
         }
     }
 
    
     private TAUser loadAuthUserFromFile(String username, String role) {
+        System.out.println("[DEBUG] loadAuthUserFromFile searching for username='" + username + "'");
         
         String roleLower = (role != null ? role : "TA").toLowerCase();
         if (roleLower.equals("admin") || roleLower.equals("administrator")) {
@@ -120,13 +120,22 @@ public class DataService {
                 taA.setCompletedCourses(courses);
                 user.setAcademic(taA);
 
-                // 2.2.4 skills
+                // 2.2.4 skills - handle both old and new format
                 com.google.gson.JsonObject skObj = root.getAsJsonObject("skills");
                 TAUser.Skills taSk = new TAUser.Skills();
-                taSk.setProgramming(   parseSkills(skObj, "programming"));
-                taSk.setTeaching(     parseSkills(skObj, "teaching"));
-                taSk.setCommunication(parseSkills(skObj, "communication"));
-                taSk.setOther(        parseSkills(skObj, "other"));
+                
+                // Check for new format (taSkillPool)
+                if (skObj != null && skObj.has("taSkillPool")) {
+                    taSk = parseNewSkillsFormat(skObj);
+                } else {
+                    // Legacy format
+                TAUser.Skills legacySkills = new TAUser.Skills();
+                legacySkills.setProgramming(parseSkills(skObj, "programming"));
+                legacySkills.setTeaching(parseSkills(skObj, "teaching"));
+                legacySkills.setCommunication(parseSkills(skObj, "communication"));
+                legacySkills.setOther(parseSkills(skObj, "other"));
+                taSk = legacySkills;
+                }
                 user.setSkills(taSk);
 
                 // 2.2.5 CV
@@ -160,7 +169,7 @@ public class DataService {
                 return user;
 
             } catch (Exception e) {
-               
+                System.err.println("Error loading user from file: " + e.getMessage());
             }
         }
         return null;
@@ -212,6 +221,83 @@ public class DataService {
         return list;
     }
 
+    private static TAUser.Skills parseNewSkillsFormat(com.google.gson.JsonObject skObj) {
+        TAUser.Skills skills = new TAUser.Skills();
+        
+        // Parse proficiency levels
+        if (skObj.has("proficiencyLevels")) {
+            List<String> levels = new ArrayList<>();
+            for (com.google.gson.JsonElement e : skObj.getAsJsonArray("proficiencyLevels")) {
+                levels.add(e.getAsString());
+            }
+            skills.setProficiencyLevels(levels);
+        }
+        
+        // Parse taSkillPool
+        if (skObj.has("taSkillPool")) {
+            com.google.gson.JsonObject pool = skObj.getAsJsonObject("taSkillPool");
+            TAUser.TaSkillPool taPool = new TAUser.TaSkillPool();
+            
+            if (pool.has("technicalSkills")) {
+                taPool.setTechnicalSkills(parseTechnicalSkillPool(pool.getAsJsonObject("technicalSkills")));
+            }
+            if (pool.has("engineeringAndTools")) {
+                taPool.setEngineeringAndTools(parseEngineeringToolPool(pool.getAsJsonObject("engineeringAndTools")));
+            }
+            if (pool.has("languageAndCommunication")) {
+                taPool.setLanguageAndCommunication(parseLanguagePool(pool.getAsJsonObject("languageAndCommunication")));
+            }
+            
+            skills.setTaSkillPool(taPool);
+        }
+        
+        return skills;
+    }
+
+    private static TAUser.TechnicalSkillPool parseTechnicalSkillPool(com.google.gson.JsonObject tech) {
+        TAUser.TechnicalSkillPool pool = new TAUser.TechnicalSkillPool();
+        if (tech.has("programmingAndSoftwareFundamentals")) {
+            pool.setProgrammingAndSoftwareFundamentals(parseSkillItems(tech.getAsJsonArray("programmingAndSoftwareFundamentals")));
+        }
+        if (tech.has("hardwareAndLogicDesign")) {
+            pool.setHardwareAndLogicDesign(parseSkillItems(tech.getAsJsonArray("hardwareAndLogicDesign")));
+        }
+        if (tech.has("embeddedSystemsAndLowLevelDevelopment")) {
+            pool.setEmbeddedSystemsAndLowLevelDevelopment(parseSkillItems(tech.getAsJsonArray("embeddedSystemsAndLowLevelDevelopment")));
+        }
+        return pool;
+    }
+
+    private static TAUser.EngineeringToolPool parseEngineeringToolPool(com.google.gson.JsonObject tools) {
+        TAUser.EngineeringToolPool pool = new TAUser.EngineeringToolPool();
+        if (tools.has("professionalDevelopmentAndSimulationTools")) {
+            pool.setProfessionalDevelopmentAndSimulationTools(parseSkillItems(tools.getAsJsonArray("professionalDevelopmentAndSimulationTools")));
+        }
+        return pool;
+    }
+
+    private static TAUser.LanguagePool parseLanguagePool(com.google.gson.JsonObject lang) {
+        TAUser.LanguagePool pool = new TAUser.LanguagePool();
+        if (lang.has("crossCulturalCommunication")) {
+            pool.setCrossCulturalCommunication(parseSkillItems(lang.getAsJsonArray("crossCulturalCommunication")));
+        }
+        return pool;
+    }
+
+    private static List<TAUser.SkillItem> parseSkillItems(com.google.gson.JsonArray arr) {
+        List<TAUser.SkillItem> items = new ArrayList<>();
+        if (arr == null) return items;
+        for (com.google.gson.JsonElement e : arr) {
+            com.google.gson.JsonObject o = e.getAsJsonObject();
+            TAUser.SkillItem item = new TAUser.SkillItem();
+            item.setName(getStr(o, "name", ""));
+            item.setSelected(getBool(o, "selected", false));
+            item.setProficiency(getStr(o, "proficiency", null));
+            items.add(item);
+        }
+        return items;
+    }
+
     
     private TAUser buildPlaceholderUser(String username, String role) {
         TAUser user = new TAUser();
@@ -238,10 +324,16 @@ public class DataService {
         user.setAcademic(taA);
 
         TAUser.Skills taSk = new TAUser.Skills();
-        taSk.setProgramming(new ArrayList<>());
-        taSk.setTeaching(new ArrayList<>());
-        taSk.setCommunication(new ArrayList<>());
-        taSk.setOther(new ArrayList<>());
+        TAUser.TaSkillPool pool = new TAUser.TaSkillPool();
+        pool.setTechnicalSkills(new TAUser.TechnicalSkillPool());
+        pool.getTechnicalSkills().setProgrammingAndSoftwareFundamentals(new ArrayList<>());
+        pool.getTechnicalSkills().setHardwareAndLogicDesign(new ArrayList<>());
+        pool.getTechnicalSkills().setEmbeddedSystemsAndLowLevelDevelopment(new ArrayList<>());
+        pool.setEngineeringAndTools(new TAUser.EngineeringToolPool());
+        pool.getEngineeringAndTools().setProfessionalDevelopmentAndSimulationTools(new ArrayList<>());
+        pool.setLanguageAndCommunication(new TAUser.LanguagePool());
+        pool.getLanguageAndCommunication().setCrossCulturalCommunication(new ArrayList<>());
+        taSk.setTaSkillPool(pool);
         user.setSkills(taSk);
 
         TAUser.CV taCv = new TAUser.CV();
@@ -420,6 +512,7 @@ public class DataService {
         o.addProperty("phoneNumber", as.getPhoneNumber());
         o.addProperty("programMajor", as.getProgramMajor());
         o.addProperty("year", as.getYear());
+        o.addProperty("department", as.getDepartment());
         o.addProperty("gpa", as.getGpa());
         return o;
     }
@@ -443,9 +536,11 @@ public class DataService {
         com.google.gson.JsonObject o = new com.google.gson.JsonObject();
         if (at.getCv() != null) {
             com.google.gson.JsonObject cv = new com.google.gson.JsonObject();
-            cv.addProperty("fileName", at.getCv().getFileName());
+            cv.addProperty("originalFileName", at.getCv().getOriginalFileName());
+            cv.addProperty("storedFileName", at.getCv().getStoredFileName());
             cv.addProperty("filePath", at.getCv().getFilePath());
             cv.addProperty("fileType", at.getCv().getFileType());
+            cv.addProperty("copiedAt", at.getCv().getCopiedAt());
             o.add("cv", cv);
         }
         if (at.getSupportingDocuments() != null && !at.getSupportingDocuments().isEmpty()) {
@@ -453,7 +548,8 @@ public class DataService {
             for (Application.Document doc : at.getSupportingDocuments()) {
                 com.google.gson.JsonObject d = new com.google.gson.JsonObject();
                 d.addProperty("documentId", doc.getDocumentId());
-                d.addProperty("fileName", doc.getFileName());
+                d.addProperty("originalFileName", doc.getOriginalFileName());
+                d.addProperty("storedFileName", doc.getStoredFileName());
                 d.addProperty("filePath", doc.getFilePath());
                 d.addProperty("fileType", doc.getFileType());
                 d.addProperty("uploadedAt", doc.getUploadedAt());
@@ -469,6 +565,31 @@ public class DataService {
         o.addProperty("assignedMO", wf.getAssignedMO());
         o.addProperty("assignedAdmin", wf.getAssignedAdmin());
         o.addProperty("reviewDepartment", wf.getReviewDepartment());
+        if (wf.getDoubleCheckRecruitment() != null) {
+            o.add("doubleCheckRecruitment", doubleCheckRecruitmentToJson(wf.getDoubleCheckRecruitment()));
+        }
+        return o;
+    }
+
+    private com.google.gson.JsonObject doubleCheckRecruitmentToJson(Application.DoubleCheckRecruitment dcr) {
+        com.google.gson.JsonObject o = new com.google.gson.JsonObject();
+        o.addProperty("enabled", dcr.isEnabled());
+        o.addProperty("version", dcr.getVersion());
+        if (dcr.getMoDecision() != null) {
+            com.google.gson.JsonObject mo = new com.google.gson.JsonObject();
+            mo.addProperty("status", dcr.getMoDecision().getStatus());
+            mo.addProperty("decidedBy", dcr.getMoDecision().getDecidedBy());
+            mo.addProperty("decidedAt", dcr.getMoDecision().getDecidedAt());
+            o.add("moDecision", mo);
+        }
+        if (dcr.getTaConfirmation() != null) {
+            com.google.gson.JsonObject ta = new com.google.gson.JsonObject();
+            ta.addProperty("status", dcr.getTaConfirmation().getStatus());
+            ta.addProperty("confirmedBy", dcr.getTaConfirmation().getConfirmedBy());
+            ta.addProperty("confirmedAt", dcr.getTaConfirmation().getConfirmedAt());
+            o.add("taConfirmation", ta);
+        }
+        o.addProperty("finalStatus", dcr.getFinalStatus());
         return o;
     }
     
@@ -476,18 +597,23 @@ public class DataService {
         com.google.gson.JsonObject o = new com.google.gson.JsonObject();
         o.addProperty("current", s.getCurrent());
         o.addProperty("label", s.getLabel());
-        o.addProperty("color", s.getColor());
         o.addProperty("lastUpdated", s.getLastUpdated());
+        o.addProperty("updatedBy", s.getUpdatedBy());
         return o;
     }
     
     private com.google.gson.JsonObject reviewToJson(Application.Review r) {
         com.google.gson.JsonObject o = new com.google.gson.JsonObject();
         o.addProperty("reviewerNotes", r.getReviewerNotes());
+        o.addProperty("decision", r.getDecision());
+        o.addProperty("decisionReason", r.getDecisionReason());
         o.addProperty("statusMessage", r.getStatusMessage());
         o.addProperty("nextSteps", r.getNextSteps());
         o.addProperty("reviewedBy", r.getReviewedBy());
         o.addProperty("reviewedAt", r.getReviewedAt());
+        o.addProperty("moDecision", r.getMoDecision());
+        o.addProperty("taConfirmationRequired", r.isTaConfirmationRequired());
+        o.addProperty("taConfirmationStatus", r.getTaConfirmationStatus());
         return o;
     }
     
@@ -501,6 +627,7 @@ public class DataService {
             o.addProperty("stepLabel", ev.getStepLabel());
             o.addProperty("status", ev.getStatus());
             o.addProperty("timestamp", ev.getTimestamp());
+            o.addProperty("updatedBy", ev.getUpdatedBy());
             o.addProperty("note", ev.getNote());
             arr.add(o);
         }
@@ -527,6 +654,23 @@ public class DataService {
         return instance;
     }
 
+    // AI分析结果缓存管理
+    public List<JobMatchResult> getCachedAIResults() {
+        return cachedAIResults;
+    }
+
+    public void setCachedAIResults(List<JobMatchResult> results) {
+        this.cachedAIResults = results;
+    }
+
+    public boolean hasCachedAIResults() {
+        return cachedAIResults != null && !cachedAIResults.isEmpty();
+    }
+
+    public void clearCachedAIResults() {
+        this.cachedAIResults = null;
+    }
+
     private void loadMockData() {
         loadCurrentUser();
         loadJobs();
@@ -534,18 +678,27 @@ public class DataService {
     }
 
     private void loadCurrentUser() {
-        currentUser = new TAUser();
-        currentUser.setUserId("u_ta_20230001");
-        currentUser.setLoginId("20230001");
-        currentUser.setRole("ta");
-        currentUser.setProfileCompletion(85);
+        TAUser loaded = loadAuthUserFromFile("johnsmith", "ta");
+        if (loaded != null) {
+            currentUser = loaded;
+        } else {
+            currentUser = buildMockUser();
+        }
+    }
+    
+    private TAUser buildMockUser() {
+        TAUser user = new TAUser();
+        user.setUserId("u_ta_20230001");
+        user.setLoginId("20230001");
+        user.setRole("ta");
+        user.setProfileCompletion(85);
 
         TAUser.Account account = new TAUser.Account();
         account.setUsername("johnsmith");
         account.setEmail("john.smith@university.edu");
         account.setStatus("active");
         account.setLastLoginAt("2026-03-18T09:20:00");
-        currentUser.setAccount(account);
+        user.setAccount(account);
 
         TAUser.Profile profile = new TAUser.Profile();
         profile.setFullName("John Smith");
@@ -556,7 +709,7 @@ public class DataService {
         profile.setPhoneNumber("(555) 123-4567");
         profile.setAddress("123 Main St, City, State, ZIP");
         profile.setShortBio("Interested in programming education and software engineering.");
-        currentUser.setProfile(profile);
+        user.setProfile(profile);
 
         TAUser.Academic academic = new TAUser.Academic();
         academic.setGpa(3.8);
@@ -572,14 +725,14 @@ public class DataService {
         c2.setGrade("A-");
         courses.add(c2);
         academic.setCompletedCourses(courses);
-        currentUser.setAcademic(academic);
+        user.setAcademic(academic);
 
         TAUser.CV cv = new TAUser.CV();
         cv.setUploaded(true);
         cv.setOriginalFileName("John_Smith_CV.pdf");
         cv.setFilePath("data/uploads/profile_cv/20230001/current_cv.pdf");
         cv.setUploadedAt("2026-03-10T10:30:00");
-        currentUser.setCv(cv);
+        user.setCv(cv);
 
         TAUser.ApplicationSummary summary = new TAUser.ApplicationSummary();
         summary.setTotalApplications(3);
@@ -587,7 +740,9 @@ public class DataService {
         summary.setUnderReview(1);
         summary.setAccepted(1);
         summary.setRejected(0);
-        currentUser.setApplicationSummary(summary);
+        user.setApplicationSummary(summary);
+        
+        return user;
     }
 
    
@@ -1301,7 +1456,6 @@ public class DataService {
         Application.Status status = new Application.Status();
         status.setCurrent("pending");
         status.setLabel("Pending");
-        status.setColor("yellow");
         status.setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         app.setStatus(status);
 
@@ -1359,7 +1513,6 @@ public class DataService {
 
         app.getStatus().setCurrent("cancelled");
         app.getStatus().setLabel("Cancelled");
-        app.getStatus().setColor("gray");
         app.getStatus().setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         if (app.getMeta() != null) {
@@ -1397,7 +1550,6 @@ public class DataService {
 
         app.getStatus().setCurrent("accepted");
         app.getStatus().setLabel("Accepted");
-        app.getStatus().setColor("green");
         app.getStatus().setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         if (app.getReview() == null) {
@@ -1432,7 +1584,41 @@ public class DataService {
     }
 
     public boolean declineOffer(String applicationId) {
-        return cancelApplication(applicationId);
+        Application app = getApplicationById(applicationId);
+        if (app == null) {
+            return false;
+        }
+        String cur = app.getStatus() != null ? app.getStatus().getCurrent() : "";
+        if (!"offer_pending".equalsIgnoreCase(cur)) {
+            return false;
+        }
+
+        // 拒绝Offer，设置状态为Rejected而不是Cancelled
+        app.getStatus().setCurrent("rejected");
+        app.getStatus().setLabel("Rejected");
+        app.getStatus().setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+        // 不设置isDeleted，保持记录可见
+        if (app.getMeta() != null) {
+            app.getMeta().setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        }
+
+        // 添加时间线事件
+        List<Application.TimelineEvent> timeline = app.getTimeline();
+        if (timeline == null) {
+            timeline = new ArrayList<>();
+            app.setTimeline(timeline);
+        }
+        Application.TimelineEvent ev = new Application.TimelineEvent();
+        ev.setTimelineId("tl_" + System.currentTimeMillis());
+        ev.setStepKey("offer_declined");
+        ev.setStepLabel("Offer Declined");
+        ev.setStatus("completed");
+        ev.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        timeline.add(ev);
+
+        saveApplicationToFile(app);
+        return true;
     }
 
     public int countApplicationsByStatus(String status) {
@@ -1484,7 +1670,6 @@ public class DataService {
             Application.Status status = new Application.Status();
             status.setCurrent("draft");
             status.setLabel("Draft");
-            status.setColor("gray");
             status.setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             newDraft.setStatus(status);
 
@@ -1512,7 +1697,6 @@ public class DataService {
         app.setDraft(false);
         app.getStatus().setCurrent("pending");
         app.getStatus().setLabel("Pending");
-        app.getStatus().setColor("yellow");
         app.getStatus().setLastUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         // Set workflow.assignedMO from job for MO visibility

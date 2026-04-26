@@ -1,24 +1,12 @@
 package TA_Job_Application_Module;
 
-import com.taapp.ui.UI;
-
-import profile_module.ui.AppFrame;
-import profile_module.ui.TaTopNavigationPanel;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.function.Consumer;
 
 public class TAPortalApp extends JFrame {
     
     private DataService dataService;
     private TAUser currentUser;
-    
-    private Consumer<String> returnToMainCallback;
-   
-    private Runnable onLogoutCallback;
     
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
@@ -35,99 +23,55 @@ public class TAPortalApp extends JFrame {
     
     private Job selectedJob;
 
-    private TaTopNavigationPanel topNav;
+    private TopNavPanel topNav;
     
     public TAPortalApp() {
-        this(null, "jobs");
+        this("jobs");
     }
 
-    
     public TAPortalApp(String initialPage) {
-        this(null, initialPage);
-    }
-
-    public void setReturnCallback(Consumer<String> callback) {
-        this.returnToMainCallback = callback;
-    }
-
-    
-    public void setLogoutCallback(Runnable callback) {
-        this.onLogoutCallback = callback;
-    }
-
-    public TAPortalApp(Runnable onReturn) {
-        this(r -> {
-            if (onReturn != null) {
-                onReturn.run();
-            }
-        }, "jobs");
-    }
-
-   
-    public TAPortalApp(java.util.function.Consumer<String> onReturn) {
-        this(onReturn, "jobs");
-    }
-
-    private String pendingInitialPage;
-    private boolean pendingShowPage;
-
-    private TAPortalApp(Consumer<String> onReturn, String initialPage) {
-        this.returnToMainCallback = onReturn;
-        this.pendingInitialPage = initialPage != null && !initialPage.isBlank() ? initialPage : "jobs";
-        this.pendingShowPage = true;
         dataService = DataService.getInstance();
         currentUser = dataService.getCurrentUser();
 
         initFrame();
         initNavigation();
         initPages();
-    }
-
-    public void finishInit() {
-        if (pendingShowPage) {
-            showPage(pendingInitialPage);
-            pendingShowPage = false;
+        
+        if (initialPage != null && !initialPage.isBlank()) {
+            showPage(initialPage);
+        } else {
+            showPage("jobs");
         }
     }
-    
+
     private void initFrame() {
         setTitle("TA System - Job Applications");
         setMinimumSize(new Dimension(980, 680));
         setSize(1080, 760);
         
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (returnToMainCallback != null) {
-                    Consumer<String> cb = returnToMainCallback;
-                    returnToMainCallback = null;
-                    cb.accept(AppFrame.ROUTE_DASHBOARD);
-                }
-            }
-        });
         
         setLayout(new BorderLayout());
         
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
-        mainContentPanel.setBackground(UI.palette().appBg());
+        mainContentPanel.setBackground(TAUI.palette().appBg());
         
         add(mainContentPanel, BorderLayout.CENTER);
     }
     
     private void initNavigation() {
-        TaTopNavigationPanel.Actions actions = new TaTopNavigationPanel.Actions() {
+        TopNavPanel.Actions actions = new TopNavPanel.Actions() {
             @Override
             public void onHome() {
-                returnToMainApp(AppFrame.ROUTE_DASHBOARD);
+                JOptionPane.showMessageDialog(TAPortalApp.this,
+                    "Home feature is not available in standalone mode.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
 
             @Override
             public void onProfileModule() {
-                returnToMainApp(AppFrame.ROUTE_PROFILE);
+                showPage("profile");
             }
 
             @Override
@@ -138,18 +82,13 @@ public class TAPortalApp extends JFrame {
             @Override
             public void onLogout() {
                 int ok = JOptionPane.showConfirmDialog(TAPortalApp.this,
-                        "Are you sure you want to logout?", "Logout", JOptionPane.OK_CANCEL_OPTION);
+                        "Are you sure you want to exit?", "Exit", JOptionPane.OK_CANCEL_OPTION);
                 if (ok == JOptionPane.OK_OPTION) {
-                    if (onLogoutCallback != null) {
-                        dispose();
-                        onLogoutCallback.run();
-                    } else {
-                        returnToMainApp(null);
-                    }
+                    System.exit(0);
                 }
             }
         };
-        topNav = new TaTopNavigationPanel(actions, this::jobPortalUserLine, TaTopNavigationPanel.Active.JOBS);
+        topNav = new TopNavPanel(actions, this::jobPortalUserLine, TopNavPanel.Active.JOBS);
         add(topNav, BorderLayout.NORTH);
     }
 
@@ -168,25 +107,14 @@ public class TAPortalApp extends JFrame {
         return "";
     }
 
-    
-    private void returnToMainApp(String route) {
-        Consumer<String> cb = returnToMainCallback;
-        returnToMainCallback = null;
-        if (cb != null) {
-            String targetRoute = (route == null || route.isBlank()) ? AppFrame.ROUTE_DASHBOARD : route;
-            cb.accept(targetRoute);
-        }
-        dispose();
-    }
-
     private void updateNavHighlight(String pageName) {
         if (topNav == null) {
             return;
         }
         if ("profile".equals(pageName)) {
-            topNav.setActive(TaTopNavigationPanel.Active.PROFILE);
+            topNav.setActive(TopNavPanel.Active.PROFILE);
         } else {
-            topNav.setActive(TaTopNavigationPanel.Active.JOBS);
+            topNav.setActive(TopNavPanel.Active.JOBS);
         }
         topNav.refreshUserLabel();
     }
@@ -202,7 +130,7 @@ public class TAPortalApp extends JFrame {
             @Override
             public void onGoToApplications() { showPage("applications"); }
             @Override
-            public void onGoToHome() { returnToMainApp(AppFrame.ROUTE_DASHBOARD); }
+            public void onGoToHome() { showPage("jobs"); }
         });
         mainContentPanel.add(jobsPage.getPanel(), "jobs");
         
@@ -252,7 +180,7 @@ public class TAPortalApp extends JFrame {
 
             @Override
             public void onBackToHome() {
-                returnToMainApp(AppFrame.ROUTE_DASHBOARD);
+                showPage("jobs");
             }
 
             @Override
@@ -316,15 +244,10 @@ public class TAPortalApp extends JFrame {
         mainContentPanel.add(profilePage.getPanel(), "profile");
     }
     
-    private String getApiKey() {
-        return System.getProperty("doubao.api.key",
-            System.getenv("ARK_API_KEY") != null ? System.getenv("ARK_API_KEY") : System.getenv("DOUBao_API_KEY"));
-    }
-    
     private static JScrollPane wrapContentInScrollPane(JComponent view) {
         JScrollPane sp = new JScrollPane(view);
         sp.setBorder(BorderFactory.createEmptyBorder());
-        sp.getViewport().setBackground(UI.palette().appBg());
+        sp.getViewport().setBackground(TAUI.palette().appBg());
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         sp.getVerticalScrollBar().setUnitIncrement(16);
@@ -358,17 +281,14 @@ public class TAPortalApp extends JFrame {
             e.printStackTrace();
         }
 
-        
         UIManager.put("OptionPane.yesButtonText", "Yes");
         UIManager.put("OptionPane.noButtonText", "No");
         UIManager.put("OptionPane.okButtonText", "OK");
         UIManager.put("OptionPane.cancelButtonText", "Cancel");
 
         SwingUtilities.invokeLater(() -> {
-            TAPortalApp app = new TAPortalApp();
-            app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            TAPortalApp app = new TAPortalApp("jobs");
             app.setVisible(true);
-            app.finishInit();
         });
     }
 }

@@ -204,10 +204,6 @@ public class Page_ApplicationStatus {
                     break;
             }
         }
-        String c = st.getColor();
-        if (c != null && !c.isEmpty()) {
-            return normalizeColorKey(c);
-        }
         return "yellow";
     }
 

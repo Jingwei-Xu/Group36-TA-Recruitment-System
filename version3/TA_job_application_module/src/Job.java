@@ -1,5 +1,6 @@
 package TA_Job_Application_Module;
 import java.util.List;
+import java.util.Map;
 
 
 public class Job {
@@ -11,6 +12,7 @@ public class Job {
     private Employment employment;
     private Dates dates;
     private Content content;
+    private Ownership ownership;
     private Publication publication;
     private Lifecycle lifecycle;
     private Stats stats;
@@ -48,6 +50,9 @@ public class Job {
 
     public Content getContent() { return content; }
     public void setContent(Content content) { this.content = content; }
+
+    public Ownership getOwnership() { return ownership; }
+    public void setOwnership(Ownership ownership) { this.ownership = ownership; }
 
     public Publication getPublication() { return publication; }
     public void setPublication(Publication publication) { this.publication = publication; }
@@ -136,6 +141,11 @@ public class Job {
         return "";
     }
 
+    public TaSkillRequirement getTaSkillRequirement() {
+        if (content != null) return content.getTaSkillRequirement();
+        return null;
+    }
+
     // Inner classes
     public static class Course {
         private String courseCode;
@@ -208,6 +218,7 @@ public class Job {
         private List<String> responsibilities;
         private List<String> requirements;
         private List<String> preferredSkills;
+        private TaSkillRequirement taSkillRequirement;
 
         public String getSummary() { return summary; }
         public void setSummary(String summary) { this.summary = summary; }
@@ -219,6 +230,21 @@ public class Job {
         public void setRequirements(List<String> requirements) { this.requirements = requirements; }
         public List<String> getPreferredSkills() { return preferredSkills; }
         public void setPreferredSkills(List<String> preferredSkills) { this.preferredSkills = preferredSkills; }
+        public TaSkillRequirement getTaSkillRequirement() { return taSkillRequirement; }
+        public void setTaSkillRequirement(TaSkillRequirement taSkillRequirement) { this.taSkillRequirement = taSkillRequirement; }
+    }
+
+    public static class Ownership {
+        private String createdBy;
+        private List<String> managedBy;
+        private String lastEditedBy;
+
+        public String getCreatedBy() { return createdBy; }
+        public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+        public List<String> getManagedBy() { return managedBy; }
+        public void setManagedBy(List<String> managedBy) { this.managedBy = managedBy; }
+        public String getLastEditedBy() { return lastEditedBy; }
+        public void setLastEditedBy(String lastEditedBy) { this.lastEditedBy = lastEditedBy; }
     }
 
     public static class Publication {
@@ -237,11 +263,20 @@ public class Job {
     public static class Lifecycle {
         private String status;
         private boolean isDeleted;
+        private String deletedAt;
+        private String deletedBy;
+        private String closeReason;
 
         public String getStatus() { return status; }
         public void setStatus(String status) { this.status = status; }
         public boolean isIsDeleted() { return isDeleted; }
         public void setIsDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
+        public String getDeletedAt() { return deletedAt; }
+        public void setDeletedAt(String deletedAt) { this.deletedAt = deletedAt; }
+        public String getDeletedBy() { return deletedBy; }
+        public void setDeletedBy(String deletedBy) { this.deletedBy = deletedBy; }
+        public String getCloseReason() { return closeReason; }
+        public void setCloseReason(String closeReason) { this.closeReason = closeReason; }
     }
 
     public static class Stats {
@@ -269,5 +304,146 @@ public class Job {
         public String getUpdatedAt() { return updatedAt; }
         public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
     }
-}
 
+    // TA Skill Requirement Classes
+    public static class TaSkillRequirement {
+        private List<String> proficiencyLevels;
+        private SkillCatalog skillCatalog;
+        private List<RequiredSkill> requiredSkills;
+        private List<String> customRequiredSkills;
+        private List<MoSelectedSkill> moSelectedSkills;
+        private MoSkillSelectionPool moSkillSelectionPool;
+
+        public List<String> getProficiencyLevels() { return proficiencyLevels; }
+        public void setProficiencyLevels(List<String> proficiencyLevels) { this.proficiencyLevels = proficiencyLevels; }
+        public SkillCatalog getSkillCatalog() { return skillCatalog; }
+        public void setSkillCatalog(SkillCatalog skillCatalog) { this.skillCatalog = skillCatalog; }
+        public List<RequiredSkill> getRequiredSkills() { return requiredSkills; }
+        public void setRequiredSkills(List<RequiredSkill> requiredSkills) { this.requiredSkills = requiredSkills; }
+        public List<String> getCustomRequiredSkills() { return customRequiredSkills; }
+        public void setCustomRequiredSkills(List<String> customRequiredSkills) { this.customRequiredSkills = customRequiredSkills; }
+        public List<MoSelectedSkill> getMoSelectedSkills() { return moSelectedSkills; }
+        public void setMoSelectedSkills(List<MoSelectedSkill> moSelectedSkills) { this.moSelectedSkills = moSelectedSkills; }
+        public MoSkillSelectionPool getMoSkillSelectionPool() { return moSkillSelectionPool; }
+        public void setMoSkillSelectionPool(MoSkillSelectionPool moSkillSelectionPool) { this.moSkillSelectionPool = moSkillSelectionPool; }
+    }
+
+    public static class RequiredSkill {
+        private String name;
+        private String minimumProficiency;
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getMinimumProficiency() { return minimumProficiency; }
+        public void setMinimumProficiency(String minimumProficiency) { this.minimumProficiency = minimumProficiency; }
+    }
+
+    public static class MoSelectedSkill {
+        private String category;
+        private String subcategory;
+        private String name;
+        private String minimumProficiency;
+
+        public String getCategory() { return category; }
+        public void setCategory(String category) { this.category = category; }
+        public String getSubcategory() { return subcategory; }
+        public void setSubcategory(String subcategory) { this.subcategory = subcategory; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getMinimumProficiency() { return minimumProficiency; }
+        public void setMinimumProficiency(String minimumProficiency) { this.minimumProficiency = minimumProficiency; }
+    }
+
+    public static class SkillCatalog {
+        private TechnicalSkills technicalSkills;
+        private EngineeringAndTools engineeringAndTools;
+        private LanguageAndCommunication languageAndCommunication;
+
+        public TechnicalSkills getTechnicalSkills() { return technicalSkills; }
+        public void setTechnicalSkills(TechnicalSkills technicalSkills) { this.technicalSkills = technicalSkills; }
+        public EngineeringAndTools getEngineeringAndTools() { return engineeringAndTools; }
+        public void setEngineeringAndTools(EngineeringAndTools engineeringAndTools) { this.engineeringAndTools = engineeringAndTools; }
+        public LanguageAndCommunication getLanguageAndCommunication() { return languageAndCommunication; }
+        public void setLanguageAndCommunication(LanguageAndCommunication languageAndCommunication) { this.languageAndCommunication = languageAndCommunication; }
+    }
+
+    public static class TechnicalSkills {
+        private List<String> programmingAndSoftwareFundamentals;
+        private List<String> hardwareAndLogicDesign;
+        private List<String> embeddedSystemsAndLowLevelDevelopment;
+
+        public List<String> getProgrammingAndSoftwareFundamentals() { return programmingAndSoftwareFundamentals; }
+        public void setProgrammingAndSoftwareFundamentals(List<String> programmingAndSoftwareFundamentals) { this.programmingAndSoftwareFundamentals = programmingAndSoftwareFundamentals; }
+        public List<String> getHardwareAndLogicDesign() { return hardwareAndLogicDesign; }
+        public void setHardwareAndLogicDesign(List<String> hardwareAndLogicDesign) { this.hardwareAndLogicDesign = hardwareAndLogicDesign; }
+        public List<String> getEmbeddedSystemsAndLowLevelDevelopment() { return embeddedSystemsAndLowLevelDevelopment; }
+        public void setEmbeddedSystemsAndLowLevelDevelopment(List<String> embeddedSystemsAndLowLevelDevelopment) { this.embeddedSystemsAndLowLevelDevelopment = embeddedSystemsAndLowLevelDevelopment; }
+    }
+
+    public static class EngineeringAndTools {
+        private List<String> professionalDevelopmentAndSimulationTools;
+
+        public List<String> getProfessionalDevelopmentAndSimulationTools() { return professionalDevelopmentAndSimulationTools; }
+        public void setProfessionalDevelopmentAndSimulationTools(List<String> professionalDevelopmentAndSimulationTools) { this.professionalDevelopmentAndSimulationTools = professionalDevelopmentAndSimulationTools; }
+    }
+
+    public static class LanguageAndCommunication {
+        private List<String> crossCulturalCommunication;
+
+        public List<String> getCrossCulturalCommunication() { return crossCulturalCommunication; }
+        public void setCrossCulturalCommunication(List<String> crossCulturalCommunication) { this.crossCulturalCommunication = crossCulturalCommunication; }
+    }
+
+    public static class MoSkillSelectionPool {
+        private TechnicalSkillPool technicalSkills;
+        private EngineeringToolPool engineeringAndTools;
+        private LanguagePool languageAndCommunication;
+
+        public TechnicalSkillPool getTechnicalSkills() { return technicalSkills; }
+        public void setTechnicalSkills(TechnicalSkillPool technicalSkills) { this.technicalSkills = technicalSkills; }
+        public EngineeringToolPool getEngineeringAndTools() { return engineeringAndTools; }
+        public void setEngineeringAndTools(EngineeringToolPool engineeringAndTools) { this.engineeringAndTools = engineeringAndTools; }
+        public LanguagePool getLanguageAndCommunication() { return languageAndCommunication; }
+        public void setLanguageAndCommunication(LanguagePool languageAndCommunication) { this.languageAndCommunication = languageAndCommunication; }
+    }
+
+    public static class TechnicalSkillPool {
+        private List<SkillItem> programmingAndSoftwareFundamentals;
+        private List<SkillItem> hardwareAndLogicDesign;
+        private List<SkillItem> embeddedSystemsAndLowLevelDevelopment;
+
+        public List<SkillItem> getProgrammingAndSoftwareFundamentals() { return programmingAndSoftwareFundamentals; }
+        public void setProgrammingAndSoftwareFundamentals(List<SkillItem> programmingAndSoftwareFundamentals) { this.programmingAndSoftwareFundamentals = programmingAndSoftwareFundamentals; }
+        public List<SkillItem> getHardwareAndLogicDesign() { return hardwareAndLogicDesign; }
+        public void setHardwareAndLogicDesign(List<SkillItem> hardwareAndLogicDesign) { this.hardwareAndLogicDesign = hardwareAndLogicDesign; }
+        public List<SkillItem> getEmbeddedSystemsAndLowLevelDevelopment() { return embeddedSystemsAndLowLevelDevelopment; }
+        public void setEmbeddedSystemsAndLowLevelDevelopment(List<SkillItem> embeddedSystemsAndLowLevelDevelopment) { this.embeddedSystemsAndLowLevelDevelopment = embeddedSystemsAndLowLevelDevelopment; }
+    }
+
+    public static class EngineeringToolPool {
+        private List<SkillItem> professionalDevelopmentAndSimulationTools;
+
+        public List<SkillItem> getProfessionalDevelopmentAndSimulationTools() { return professionalDevelopmentAndSimulationTools; }
+        public void setProfessionalDevelopmentAndSimulationTools(List<SkillItem> professionalDevelopmentAndSimulationTools) { this.professionalDevelopmentAndSimulationTools = professionalDevelopmentAndSimulationTools; }
+    }
+
+    public static class LanguagePool {
+        private List<SkillItem> crossCulturalCommunication;
+
+        public List<SkillItem> getCrossCulturalCommunication() { return crossCulturalCommunication; }
+        public void setCrossCulturalCommunication(List<SkillItem> crossCulturalCommunication) { this.crossCulturalCommunication = crossCulturalCommunication; }
+    }
+
+    public static class SkillItem {
+        private String name;
+        private boolean selected;
+        private String minimumProficiency;
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public boolean isSelected() { return selected; }
+        public void setSelected(boolean selected) { this.selected = selected; }
+        public String getMinimumProficiency() { return minimumProficiency; }
+        public void setMinimumProficiency(String minimumProficiency) { this.minimumProficiency = minimumProficiency; }
+    }
+}

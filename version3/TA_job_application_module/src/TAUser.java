@@ -1,4 +1,6 @@
 package TA_Job_Application_Module;
+import java.util.List;
+
 
 public class TAUser {
     private String userId;
@@ -10,10 +12,12 @@ public class TAUser {
     private Skills skills;
     private CV cv;
     private ApplicationSummary applicationSummary;
+    private Dashboard dashboard;
+    private Permissions permissions;
+    private Meta meta;
     private int profileCompletion;
     /** When false, TA portal shows first-login onboarding; missing in JSON is treated as true (existing users). */
     private boolean onboardingCompleted = true;
-    private Meta meta;
 
     // Getters and Setters
     public String getUserId() { return userId; }
@@ -42,6 +46,12 @@ public class TAUser {
     
     public ApplicationSummary getApplicationSummary() { return applicationSummary; }
     public void setApplicationSummary(ApplicationSummary applicationSummary) { this.applicationSummary = applicationSummary; }
+
+    public Dashboard getDashboard() { return dashboard; }
+    public void setDashboard(Dashboard dashboard) { this.dashboard = dashboard; }
+
+    public Permissions getPermissions() { return permissions; }
+    public void setPermissions(Permissions permissions) { this.permissions = permissions; }
     
     public int getProfileCompletion() { return profileCompletion; }
     public void setProfileCompletion(int profileCompletion) { this.profileCompletion = profileCompletion; }
@@ -99,12 +109,12 @@ public class TAUser {
 
     public static class Academic {
         private double gpa;
-        private java.util.List<CompletedCourse> completedCourses;
+        private List<CompletedCourse> completedCourses;
 
         public double getGpa() { return gpa; }
         public void setGpa(double gpa) { this.gpa = gpa; }
-        public java.util.List<CompletedCourse> getCompletedCourses() { return completedCourses; }
-        public void setCompletedCourses(java.util.List<CompletedCourse> completedCourses) { this.completedCourses = completedCourses; }
+        public List<CompletedCourse> getCompletedCourses() { return completedCourses; }
+        public void setCompletedCourses(List<CompletedCourse> completedCourses) { this.completedCourses = completedCourses; }
     }
 
     public static class CompletedCourse {
@@ -121,19 +131,130 @@ public class TAUser {
     }
 
     public static class Skills {
-        private java.util.List<Skill> programming;
-        private java.util.List<Skill> teaching;
-        private java.util.List<Skill> communication;
-        private java.util.List<Skill> other;
+        private List<String> proficiencyLevels;
+        private TaSkillPool taSkillPool;
 
-        public java.util.List<Skill> getProgramming() { return programming; }
-        public void setProgramming(java.util.List<Skill> programming) { this.programming = programming; }
-        public java.util.List<Skill> getTeaching() { return teaching; }
-        public void setTeaching(java.util.List<Skill> teaching) { this.teaching = teaching; }
-        public java.util.List<Skill> getCommunication() { return communication; }
-        public void setCommunication(java.util.List<Skill> communication) { this.communication = communication; }
-        public java.util.List<Skill> getOther() { return other; }
-        public void setOther(java.util.List<Skill> other) { this.other = other; }
+        public List<String> getProficiencyLevels() { return proficiencyLevels; }
+        public void setProficiencyLevels(List<String> proficiencyLevels) { this.proficiencyLevels = proficiencyLevels; }
+        public TaSkillPool getTaSkillPool() { return taSkillPool; }
+        public void setTaSkillPool(TaSkillPool taSkillPool) { this.taSkillPool = taSkillPool; }
+
+        // Legacy setters for backward compatibility with old format
+        public void setProgramming(List<Skill> programming) { /* ignore in new format */ }
+        public void setTeaching(List<Skill> teaching) { /* ignore in new format */ }
+        public void setCommunication(List<Skill> communication) { /* ignore in new format */ }
+        public void setOther(List<Skill> other) { /* ignore in new format */ }
+
+        // Helper method to get selected skills as a list of skill names (for backward compatibility)
+        public List<Skill> getSelectedSkills() {
+            List<Skill> selected = new java.util.ArrayList<>();
+            if (taSkillPool != null) {
+                if (taSkillPool.getTechnicalSkills() != null) {
+                    TechnicalSkillPool tech = taSkillPool.getTechnicalSkills();
+                    addSelectedSkills(tech.getProgrammingAndSoftwareFundamentals(), selected);
+                    addSelectedSkills(tech.getHardwareAndLogicDesign(), selected);
+                    addSelectedSkills(tech.getEmbeddedSystemsAndLowLevelDevelopment(), selected);
+                }
+                if (taSkillPool.getEngineeringAndTools() != null && taSkillPool.getEngineeringAndTools().getProfessionalDevelopmentAndSimulationTools() != null) {
+                    addSelectedSkills(taSkillPool.getEngineeringAndTools().getProfessionalDevelopmentAndSimulationTools(), selected);
+                }
+                if (taSkillPool.getLanguageAndCommunication() != null && taSkillPool.getLanguageAndCommunication().getCrossCulturalCommunication() != null) {
+                    addSelectedSkills(taSkillPool.getLanguageAndCommunication().getCrossCulturalCommunication(), selected);
+                }
+            }
+            return selected;
+        }
+
+        private void addSelectedSkills(List<SkillItem> items, List<Skill> result) {
+            if (items != null) {
+                for (SkillItem item : items) {
+                    if (item.isSelected()) {
+                        Skill s = new Skill();
+                        s.setName(item.getName());
+                        s.setProficiency(item.getProficiency());
+                        result.add(s);
+                    }
+                }
+            }
+        }
+
+        // Legacy methods for backward compatibility
+        public List<Skill> getProgramming() {
+            List<Skill> list = new java.util.ArrayList<>();
+            if (taSkillPool != null && taSkillPool.getTechnicalSkills() != null) {
+                addSelectedSkills(taSkillPool.getTechnicalSkills().getProgrammingAndSoftwareFundamentals(), list);
+            }
+            return list;
+        }
+
+        public List<Skill> getTeaching() { return new java.util.ArrayList<>(); }
+        public List<Skill> getCommunication() {
+            List<Skill> list = new java.util.ArrayList<>();
+            if (taSkillPool != null && taSkillPool.getLanguageAndCommunication() != null) {
+                addSelectedSkills(taSkillPool.getLanguageAndCommunication().getCrossCulturalCommunication(), list);
+            }
+            return list;
+        }
+        public List<Skill> getOther() {
+            List<Skill> list = new java.util.ArrayList<>();
+            if (taSkillPool != null && taSkillPool.getEngineeringAndTools() != null) {
+                addSelectedSkills(taSkillPool.getEngineeringAndTools().getProfessionalDevelopmentAndSimulationTools(), list);
+            }
+            return list;
+        }
+    }
+
+    public static class TaSkillPool {
+        private TechnicalSkillPool technicalSkills;
+        private EngineeringToolPool engineeringAndTools;
+        private LanguagePool languageAndCommunication;
+
+        public TechnicalSkillPool getTechnicalSkills() { return technicalSkills; }
+        public void setTechnicalSkills(TechnicalSkillPool technicalSkills) { this.technicalSkills = technicalSkills; }
+        public EngineeringToolPool getEngineeringAndTools() { return engineeringAndTools; }
+        public void setEngineeringAndTools(EngineeringToolPool engineeringAndTools) { this.engineeringAndTools = engineeringAndTools; }
+        public LanguagePool getLanguageAndCommunication() { return languageAndCommunication; }
+        public void setLanguageAndCommunication(LanguagePool languageAndCommunication) { this.languageAndCommunication = languageAndCommunication; }
+    }
+
+    public static class TechnicalSkillPool {
+        private List<SkillItem> programmingAndSoftwareFundamentals;
+        private List<SkillItem> hardwareAndLogicDesign;
+        private List<SkillItem> embeddedSystemsAndLowLevelDevelopment;
+
+        public List<SkillItem> getProgrammingAndSoftwareFundamentals() { return programmingAndSoftwareFundamentals; }
+        public void setProgrammingAndSoftwareFundamentals(List<SkillItem> programmingAndSoftwareFundamentals) { this.programmingAndSoftwareFundamentals = programmingAndSoftwareFundamentals; }
+        public List<SkillItem> getHardwareAndLogicDesign() { return hardwareAndLogicDesign; }
+        public void setHardwareAndLogicDesign(List<SkillItem> hardwareAndLogicDesign) { this.hardwareAndLogicDesign = hardwareAndLogicDesign; }
+        public List<SkillItem> getEmbeddedSystemsAndLowLevelDevelopment() { return embeddedSystemsAndLowLevelDevelopment; }
+        public void setEmbeddedSystemsAndLowLevelDevelopment(List<SkillItem> embeddedSystemsAndLowLevelDevelopment) { this.embeddedSystemsAndLowLevelDevelopment = embeddedSystemsAndLowLevelDevelopment; }
+    }
+
+    public static class EngineeringToolPool {
+        private List<SkillItem> professionalDevelopmentAndSimulationTools;
+
+        public List<SkillItem> getProfessionalDevelopmentAndSimulationTools() { return professionalDevelopmentAndSimulationTools; }
+        public void setProfessionalDevelopmentAndSimulationTools(List<SkillItem> professionalDevelopmentAndSimulationTools) { this.professionalDevelopmentAndSimulationTools = professionalDevelopmentAndSimulationTools; }
+    }
+
+    public static class LanguagePool {
+        private List<SkillItem> crossCulturalCommunication;
+
+        public List<SkillItem> getCrossCulturalCommunication() { return crossCulturalCommunication; }
+        public void setCrossCulturalCommunication(List<SkillItem> crossCulturalCommunication) { this.crossCulturalCommunication = crossCulturalCommunication; }
+    }
+
+    public static class SkillItem {
+        private String name;
+        private boolean selected;
+        private String proficiency;
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public boolean isSelected() { return selected; }
+        public void setSelected(boolean selected) { this.selected = selected; }
+        public String getProficiency() { return proficiency; }
+        public void setProficiency(String proficiency) { this.proficiency = proficiency; }
     }
 
     public static class Skill {
@@ -193,6 +314,41 @@ public class TAUser {
         public void setRejected(int rejected) { this.rejected = rejected; }
     }
 
+    public static class Dashboard {
+        private int profileCompletion;
+
+        public int getProfileCompletion() { return profileCompletion; }
+        public void setProfileCompletion(int profileCompletion) { this.profileCompletion = profileCompletion; }
+    }
+
+    public static class Permissions {
+        private boolean canEditOwnProfile;
+        private boolean canUploadCV;
+        private boolean canBrowseJobs;
+        private boolean canApplyJob;
+        private boolean canViewOwnApplications;
+        private boolean canReviewApplication;
+        private boolean canManageJob;
+        private boolean canManageUsers;
+
+        public boolean isCanEditOwnProfile() { return canEditOwnProfile; }
+        public void setCanEditOwnProfile(boolean canEditOwnProfile) { this.canEditOwnProfile = canEditOwnProfile; }
+        public boolean isCanUploadCV() { return canUploadCV; }
+        public void setCanUploadCV(boolean canUploadCV) { this.canUploadCV = canUploadCV; }
+        public boolean isCanBrowseJobs() { return canBrowseJobs; }
+        public void setCanBrowseJobs(boolean canBrowseJobs) { this.canBrowseJobs = canBrowseJobs; }
+        public boolean isCanApplyJob() { return canApplyJob; }
+        public void setCanApplyJob(boolean canApplyJob) { this.canApplyJob = canApplyJob; }
+        public boolean isCanViewOwnApplications() { return canViewOwnApplications; }
+        public void setCanViewOwnApplications(boolean canViewOwnApplications) { this.canViewOwnApplications = canViewOwnApplications; }
+        public boolean isCanReviewApplication() { return canReviewApplication; }
+        public void setCanReviewApplication(boolean canReviewApplication) { this.canReviewApplication = canReviewApplication; }
+        public boolean isCanManageJob() { return canManageJob; }
+        public void setCanManageJob(boolean canManageJob) { this.canManageJob = canManageJob; }
+        public boolean isCanManageUsers() { return canManageUsers; }
+        public void setCanManageUsers(boolean canManageUsers) { this.canManageUsers = canManageUsers; }
+    }
+
     public static class Meta {
         private String createdAt;
         private String updatedAt;
@@ -209,4 +365,3 @@ public class TAUser {
         public void setIsActive(boolean isActive) { this.isActive = isActive; }
     }
 }
-

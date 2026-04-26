@@ -11,11 +11,11 @@ public class Application {
     private ApplicantSnapshot applicantSnapshot;
     private ApplicationForm applicationForm;
     private Attachments attachments;
-    private Status status;
-    private List<TimelineEvent> timeline;
-    private Review review;
-    private Meta meta;
     private Workflow workflow;
+    private Status status;
+    private Review review;
+    private List<TimelineEvent> timeline;
+    private Meta meta;
     private boolean isDraft;
 
     // Getters and Setters
@@ -43,20 +43,20 @@ public class Application {
     public Attachments getAttachments() { return attachments; }
     public void setAttachments(Attachments attachments) { this.attachments = attachments; }
 
+    public Workflow getWorkflow() { return workflow; }
+    public void setWorkflow(Workflow workflow) { this.workflow = workflow; }
+
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
-
-    public List<TimelineEvent> getTimeline() { return timeline; }
-    public void setTimeline(List<TimelineEvent> timeline) { this.timeline = timeline; }
 
     public Review getReview() { return review; }
     public void setReview(Review review) { this.review = review; }
 
+    public List<TimelineEvent> getTimeline() { return timeline; }
+    public void setTimeline(List<TimelineEvent> timeline) { this.timeline = timeline; }
+
     public Meta getMeta() { return meta; }
     public void setMeta(Meta meta) { this.meta = meta; }
-
-    public Workflow getWorkflow() { return workflow; }
-    public void setWorkflow(Workflow workflow) { this.workflow = workflow; }
 
     public boolean isDraft() { return isDraft; }
     public void setDraft(boolean draft) { isDraft = draft; }
@@ -110,6 +110,7 @@ public class Application {
         private String phoneNumber;
         private String programMajor;
         private String year;
+        private String department;
         private double gpa;
 
         public String getFullName() { return fullName; }
@@ -124,6 +125,8 @@ public class Application {
         public void setProgramMajor(String programMajor) { this.programMajor = programMajor; }
         public String getYear() { return year; }
         public void setYear(String year) { this.year = year; }
+        public String getDepartment() { return department; }
+        public void setDepartment(String department) { this.department = department; }
         public double getGpa() { return gpa; }
         public void setGpa(double gpa) { this.gpa = gpa; }
     }
@@ -155,29 +158,38 @@ public class Application {
     }
 
     public static class CVInfo {
-        private String fileName;
+        private String originalFileName;
+        private String storedFileName;
         private String filePath;
         private String fileType;
+        private String copiedAt;
 
-        public String getFileName() { return fileName; }
-        public void setFileName(String fileName) { this.fileName = fileName; }
+        public String getOriginalFileName() { return originalFileName; }
+        public void setOriginalFileName(String originalFileName) { this.originalFileName = originalFileName; }
+        public String getStoredFileName() { return storedFileName; }
+        public void setStoredFileName(String storedFileName) { this.storedFileName = storedFileName; }
         public String getFilePath() { return filePath; }
         public void setFilePath(String filePath) { this.filePath = filePath; }
         public String getFileType() { return fileType; }
         public void setFileType(String fileType) { this.fileType = fileType; }
+        public String getCopiedAt() { return copiedAt; }
+        public void setCopiedAt(String copiedAt) { this.copiedAt = copiedAt; }
     }
 
     public static class Document {
         private String documentId;
-        private String fileName;
+        private String originalFileName;
+        private String storedFileName;
         private String filePath;
         private String fileType;
         private String uploadedAt;
 
         public String getDocumentId() { return documentId; }
         public void setDocumentId(String documentId) { this.documentId = documentId; }
-        public String getFileName() { return fileName; }
-        public void setFileName(String fileName) { this.fileName = fileName; }
+        public String getOriginalFileName() { return originalFileName; }
+        public void setOriginalFileName(String originalFileName) { this.originalFileName = originalFileName; }
+        public String getStoredFileName() { return storedFileName; }
+        public void setStoredFileName(String storedFileName) { this.storedFileName = storedFileName; }
         public String getFilePath() { return filePath; }
         public void setFilePath(String filePath) { this.filePath = filePath; }
         public String getFileType() { return fileType; }
@@ -186,20 +198,115 @@ public class Application {
         public void setUploadedAt(String uploadedAt) { this.uploadedAt = uploadedAt; }
     }
 
+    public static class Workflow {
+        private String assignedMO;
+        private String assignedAdmin;
+        private String reviewDepartment;
+        private DoubleCheckRecruitment doubleCheckRecruitment;
+
+        public String getAssignedMO() { return assignedMO; }
+        public void setAssignedMO(String assignedMO) { this.assignedMO = assignedMO; }
+        public String getAssignedAdmin() { return assignedAdmin; }
+        public void setAssignedAdmin(String assignedAdmin) { this.assignedAdmin = assignedAdmin; }
+        public String getReviewDepartment() { return reviewDepartment; }
+        public void setReviewDepartment(String reviewDepartment) { this.reviewDepartment = reviewDepartment; }
+        public DoubleCheckRecruitment getDoubleCheckRecruitment() { return doubleCheckRecruitment; }
+        public void setDoubleCheckRecruitment(DoubleCheckRecruitment doubleCheckRecruitment) { this.doubleCheckRecruitment = doubleCheckRecruitment; }
+    }
+
+    public static class DoubleCheckRecruitment {
+        private boolean enabled;
+        private int version;
+        private MoDecision moDecision;
+        private TaConfirmation taConfirmation;
+        private String finalStatus;
+
+        public boolean isEnabled() { return enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public int getVersion() { return version; }
+        public void setVersion(int version) { this.version = version; }
+        public MoDecision getMoDecision() { return moDecision; }
+        public void setMoDecision(MoDecision moDecision) { this.moDecision = moDecision; }
+        public TaConfirmation getTaConfirmation() { return taConfirmation; }
+        public void setTaConfirmation(TaConfirmation taConfirmation) { this.taConfirmation = taConfirmation; }
+        public String getFinalStatus() { return finalStatus; }
+        public void setFinalStatus(String finalStatus) { this.finalStatus = finalStatus; }
+    }
+
+    public static class MoDecision {
+        private String status;
+        private String decidedBy;
+        private String decidedAt;
+
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+        public String getDecidedBy() { return decidedBy; }
+        public void setDecidedBy(String decidedBy) { this.decidedBy = decidedBy; }
+        public String getDecidedAt() { return decidedAt; }
+        public void setDecidedAt(String decidedAt) { this.decidedAt = decidedAt; }
+    }
+
+    public static class TaConfirmation {
+        private String status;
+        private String confirmedBy;
+        private String confirmedAt;
+
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+        public String getConfirmedBy() { return confirmedBy; }
+        public void setConfirmedBy(String confirmedBy) { this.confirmedBy = confirmedBy; }
+        public String getConfirmedAt() { return confirmedAt; }
+        public void setConfirmedAt(String confirmedAt) { this.confirmedAt = confirmedAt; }
+    }
+
     public static class Status {
         private String current;
         private String label;
-        private String color;
         private String lastUpdated;
+        private String updatedBy;
 
         public String getCurrent() { return current; }
         public void setCurrent(String current) { this.current = current; }
         public String getLabel() { return label; }
         public void setLabel(String label) { this.label = label; }
-        public String getColor() { return color; }
-        public void setColor(String color) { this.color = color; }
         public String getLastUpdated() { return lastUpdated; }
         public void setLastUpdated(String lastUpdated) { this.lastUpdated = lastUpdated; }
+        public String getUpdatedBy() { return updatedBy; }
+        public void setUpdatedBy(String updatedBy) { this.updatedBy = updatedBy; }
+    }
+
+    public static class Review {
+        private String reviewerNotes;
+        private String decision;
+        private String decisionReason;
+        private String statusMessage;
+        private String nextSteps;
+        private String reviewedBy;
+        private String reviewedAt;
+        private String moDecision;
+        private boolean taConfirmationRequired;
+        private String taConfirmationStatus;
+
+        public String getReviewerNotes() { return reviewerNotes; }
+        public void setReviewerNotes(String reviewerNotes) { this.reviewerNotes = reviewerNotes; }
+        public String getDecision() { return decision; }
+        public void setDecision(String decision) { this.decision = decision; }
+        public String getDecisionReason() { return decisionReason; }
+        public void setDecisionReason(String decisionReason) { this.decisionReason = decisionReason; }
+        public String getStatusMessage() { return statusMessage; }
+        public void setStatusMessage(String statusMessage) { this.statusMessage = statusMessage; }
+        public String getNextSteps() { return nextSteps; }
+        public void setNextSteps(String nextSteps) { this.nextSteps = nextSteps; }
+        public String getReviewedBy() { return reviewedBy; }
+        public void setReviewedBy(String reviewedBy) { this.reviewedBy = reviewedBy; }
+        public String getReviewedAt() { return reviewedAt; }
+        public void setReviewedAt(String reviewedAt) { this.reviewedAt = reviewedAt; }
+        public String getMoDecision() { return moDecision; }
+        public void setMoDecision(String moDecision) { this.moDecision = moDecision; }
+        public boolean isTaConfirmationRequired() { return taConfirmationRequired; }
+        public void setTaConfirmationRequired(boolean taConfirmationRequired) { this.taConfirmationRequired = taConfirmationRequired; }
+        public String getTaConfirmationStatus() { return taConfirmationStatus; }
+        public void setTaConfirmationStatus(String taConfirmationStatus) { this.taConfirmationStatus = taConfirmationStatus; }
     }
 
     public static class TimelineEvent {
@@ -208,6 +315,7 @@ public class Application {
         private String stepLabel;
         private String status;
         private String timestamp;
+        private String updatedBy;
         private String note;
 
         public String getTimelineId() { return timelineId; }
@@ -220,27 +328,10 @@ public class Application {
         public void setStatus(String status) { this.status = status; }
         public String getTimestamp() { return timestamp; }
         public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+        public String getUpdatedBy() { return updatedBy; }
+        public void setUpdatedBy(String updatedBy) { this.updatedBy = updatedBy; }
         public String getNote() { return note; }
         public void setNote(String note) { this.note = note; }
-    }
-
-    public static class Review {
-        private String reviewerNotes;
-        private String statusMessage;
-        private String nextSteps;
-        private String reviewedBy;
-        private String reviewedAt;
-
-        public String getReviewerNotes() { return reviewerNotes; }
-        public void setReviewerNotes(String reviewerNotes) { this.reviewerNotes = reviewerNotes; }
-        public String getStatusMessage() { return statusMessage; }
-        public void setStatusMessage(String statusMessage) { this.statusMessage = statusMessage; }
-        public String getNextSteps() { return nextSteps; }
-        public void setNextSteps(String nextSteps) { this.nextSteps = nextSteps; }
-        public String getReviewedBy() { return reviewedBy; }
-        public void setReviewedBy(String reviewedBy) { this.reviewedBy = reviewedBy; }
-        public String getReviewedAt() { return reviewedAt; }
-        public void setReviewedAt(String reviewedAt) { this.reviewedAt = reviewedAt; }
     }
 
     public static class Meta {
@@ -255,18 +346,4 @@ public class Application {
         public boolean isIsDeleted() { return isDeleted; }
         public void setIsDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
     }
-
-    public static class Workflow {
-        private String assignedMO;
-        private String assignedAdmin;
-        private String reviewDepartment;
-
-        public String getAssignedMO() { return assignedMO; }
-        public void setAssignedMO(String assignedMO) { this.assignedMO = assignedMO; }
-        public String getAssignedAdmin() { return assignedAdmin; }
-        public void setAssignedAdmin(String assignedAdmin) { this.assignedAdmin = assignedAdmin; }
-        public String getReviewDepartment() { return reviewDepartment; }
-        public void setReviewDepartment(String reviewDepartment) { this.reviewDepartment = reviewDepartment; }
-    }
 }
-

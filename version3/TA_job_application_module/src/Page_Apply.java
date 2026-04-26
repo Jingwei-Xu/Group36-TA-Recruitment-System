@@ -467,22 +467,15 @@ public class Page_Apply {
         }
         List<String> all = new ArrayList<>();
         TAUser.Skills s = user.getSkills();
-        addSkillNames(all, s.getProgramming());
-        addSkillNames(all, s.getTeaching());
-        addSkillNames(all, s.getCommunication());
-        addSkillNames(all, s.getOther());
-        return String.join(", ", all);
-    }
-
-    private void addSkillNames(List<String> out, List<TAUser.Skill> skills) {
-        if (skills == null) {
-            return;
-        }
-        for (TAUser.Skill sk : skills) {
-            if (sk != null && sk.getName() != null && !sk.getName().trim().isEmpty()) {
-                out.add(sk.getName().trim());
+        List<TAUser.Skill> selectedSkills = s.getSelectedSkills();
+        if (selectedSkills != null) {
+            for (TAUser.Skill sk : selectedSkills) {
+                if (sk != null && sk.getName() != null && !sk.getName().trim().isEmpty()) {
+                    all.add(sk.getName().trim());
+                }
             }
         }
+        return String.join(", ", all);
     }
 
     private JTextField createEditableField(String value) {
@@ -656,7 +649,8 @@ public class Page_Apply {
                 System.err.println("Error copying CV file: " + ex.getMessage());
             }
             Application.CVInfo cv = new Application.CVInfo();
-            cv.setFileName(sourceFile.getName());
+            cv.setOriginalFileName(sourceFile.getName());
+            cv.setStoredFileName(sourceFile.getName());
             cv.setFilePath(destFile.getAbsolutePath());
             String lower = sourceFile.getName().toLowerCase();
             cv.setFileType(lower.contains(".") ? lower.substring(lower.lastIndexOf('.') + 1) : "");
@@ -667,7 +661,8 @@ public class Page_Apply {
             for (String p : selectedSupportPaths) {
                 File f = new File(p);
                 Application.Document d = new Application.Document();
-                d.setFileName(f.getName());
+                d.setOriginalFileName(f.getName());
+                d.setStoredFileName(f.getName());
                 d.setFilePath(f.getAbsolutePath());
                 String lower = f.getName().toLowerCase();
                 d.setFileType(lower.contains(".") ? lower.substring(lower.lastIndexOf('.') + 1) : "");
@@ -809,7 +804,7 @@ public class Page_Apply {
         String draftCvFileName = null;
         String draftCvPath = null;
         if (draft.getAttachments() != null && draft.getAttachments().getCv() != null) {
-            draftCvFileName = draft.getAttachments().getCv().getFileName();
+            draftCvFileName = draft.getAttachments().getCv().getOriginalFileName();
             draftCvPath = draft.getAttachments().getCv().getFilePath();
         }
         
@@ -917,7 +912,7 @@ public class Page_Apply {
         JButton resumePickBtn = (JButton) resumeBox.getClientProperty("pickButton");
         JLabel resumeHintLbl = (JLabel) resumeBox.getClientProperty("hintLabel");
         if (draft.getAttachments() != null && draft.getAttachments().getCv() != null) {
-            resumeHintLbl.setText(draft.getAttachments().getCv().getFileName() + " (selected)");
+            resumeHintLbl.setText(draft.getAttachments().getCv().getOriginalFileName() + " (selected)");
             resumeHintLbl.setForeground(UI_Constants.SUCCESS_COLOR);
         }
         resumePickBtn.addActionListener(ev -> {

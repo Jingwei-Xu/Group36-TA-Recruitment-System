@@ -12,6 +12,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -87,9 +88,59 @@ public class Page_MyApplications {
     }
 
     public void refreshTable() {
+        // 检查当前筛选是否会产生空结果，如果是则重置筛选条件
+        String currentFilter = statusFilterCombo != null ? (String) statusFilterCombo.getSelectedItem() : "All Statuses";
+        String currentSearch = searchField != null ? searchField.getText().trim() : "";
+        List<Application> apps = getFilteredApplications(currentFilter, currentSearch);
+
+        if (apps.isEmpty() && !"All Statuses".equals(currentFilter)) {
+            // 当前筛选条件没有结果，重置为全部显示
+            if (statusFilterCombo != null) {
+                statusFilterCombo.setSelectedItem("All Statuses");
+            }
+        }
+
         updateSummaryCards();
         applyFiltersAndFillTable();
         refreshDraftsTable();
+        updateOfferPendingAlert(dataService.getUserApplications());
+    }
+
+    private List<Application> getFilteredApplications(String statusFilter, String searchText) {
+        List<Application> apps = dataService.getUserApplications();
+        if (apps == null) return new ArrayList<>();
+
+        return apps.stream()
+            .filter(app -> {
+                // Status filter
+                if (statusFilter != null && !statusFilter.equals("All Statuses")) {
+                    String status = app.getStatus() != null ? app.getStatus().getCurrent() : "";
+                    boolean statusMatch = false;
+                    switch (statusFilter) {
+                        case "Pending": statusMatch = "pending".equalsIgnoreCase(status); break;
+                        case "Under Review": statusMatch = "under_review".equalsIgnoreCase(status); break;
+                        case "Offer Pending": statusMatch = "offer_pending".equalsIgnoreCase(status); break;
+                        case "Accepted": statusMatch = "accepted".equalsIgnoreCase(status); break;
+                        case "Rejected": statusMatch = "rejected".equalsIgnoreCase(status); break;
+                        default: statusMatch = true;
+                    }
+                    if (!statusMatch) return false;
+                }
+                // Search filter
+                if (searchText != null && !searchText.isEmpty()) {
+                    String jobTitle = "";
+                    String dept = "";
+                    if (app.getJobSnapshot() != null) {
+                        jobTitle = app.getJobSnapshot().getTitle() != null ? app.getJobSnapshot().getTitle().toLowerCase() : "";
+                        dept = app.getJobSnapshot().getDepartment() != null ? app.getJobSnapshot().getDepartment().toLowerCase() : "";
+                    }
+                    if (!jobTitle.contains(searchText.toLowerCase()) && !dept.contains(searchText.toLowerCase())) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            .collect(Collectors.toList());
     }
 
     
