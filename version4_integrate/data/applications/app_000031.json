@@ -1,0 +1,85 @@
+{
+  "applicationId": "app_000031",
+  "userId": "u_ta_20230007",
+  "studentId": "20230007",
+  "jobId": "job_E200_2026_spring",
+  "jobSnapshot": {
+    "title": "Math TA",
+    "courseCode": "E200",
+    "courseName": "MAthmatics",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-26",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 5,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "Mary",
+    "studentId": "20230007",
+    "email": "Mary@university.edu",
+    "phoneNumber": "",
+    "programMajor": "",
+    "year": "",
+    "gpa": 0.0
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Python",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "C/C++",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "FreeRTOS",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Embedded C",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Keil5",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "CST Studio Suite",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "relevantExperience": "I once worked as a teaching assistant",
+    "availability": "Tuesday to Friday: 10:00 - 16:00",
+    "motivationCoverLetter": "I hope to deepen my understanding of relevant knowledge and gain more experience interacting with students while working as a teaching assistant for this course."
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "Mary_cv.pdf",
+      "storedFileName": "Mary_cv.pdf",
+      "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230007\\Mary_cv.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "status": {
+    "current": "draft",
+    "label": "Draft",
+    "lastUpdated": "2026-05-19T18:29:34.926834"
+  },
+  "review": {
+    "taConfirmationRequired": false
+  },
+  "meta": {
+    "submittedAt": "2026-05-19T18:29:34.926834",
+    "updatedAt": "2026-05-19T18:29:34.926834",
+    "isDeleted": false
+  },
+  "isDraft": true
+}

@@ -1,0 +1,180 @@
+{
+  "userId": "u_ta_20230031",
+  "loginId": "20230031",
+  "role": "ta",
+  "account": {
+    "username": "2023210777",
+    "email": "2023210777@bupt.cn",
+    "passwordHash": "hashed_2023210777",
+    "password": "test1234",
+    "status": "active",
+    "lastLoginAt": "2026-05-21T20:37:50.537689100"
+  },
+  "profile": {
+    "fullName": "Lily",
+    "studentId": "2023210777",
+    "year": "3rd Year",
+    "programMajor": "CS",
+    "department": "",
+    "phoneNumber": "13409875678",
+    "address": "",
+    "shortBio": ""
+  },
+  "academic": {
+    "gpa": 0.0,
+    "completedCourses": []
+  },
+  "skills": {
+    "proficiencyLevels": [
+      "Beginner",
+      "Intermediate",
+      "Advanced"
+    ],
+    "taSkillPool": {
+      "technicalSkills": {
+        "programmingAndSoftwareFundamentals": [
+          {
+            "name": "Java",
+            "selected": false
+          },
+          {
+            "name": "Python",
+            "selected": false
+          },
+          {
+            "name": "C/C++",
+            "selected": false
+          },
+          {
+            "name": "SQL",
+            "selected": false
+          },
+          {
+            "name": "Algorithms \u0026 Data Structures",
+            "selected": false
+          },
+          {
+            "name": "Object-Oriented Programming (OOP)",
+            "selected": false
+          }
+        ],
+        "hardwareAndLogicDesign": [
+          {
+            "name": "VHDL",
+            "selected": false
+          },
+          {
+            "name": "Verilog",
+            "selected": false
+          },
+          {
+            "name": "Digital Logic Design",
+            "selected": false
+          },
+          {
+            "name": "FPGA Development \u0026 Debugging",
+            "selected": false
+          }
+        ],
+        "embeddedSystemsAndLowLevelDevelopment": [
+          {
+            "name": "STM32 Development",
+            "selected": false
+          },
+          {
+            "name": "FreeRTOS",
+            "selected": false
+          },
+          {
+            "name": "Embedded C",
+            "selected": false
+          },
+          {
+            "name": "Hardware Driver Development",
+            "selected": false
+          }
+        ]
+      },
+      "engineeringAndTools": {
+        "professionalDevelopmentAndSimulationTools": [
+          {
+            "name": "Quartus Prime",
+            "selected": false
+          },
+          {
+            "name": "Keil5",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeIDE",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeMX",
+            "selected": false
+          },
+          {
+            "name": "CST Studio Suite",
+            "selected": false
+          },
+          {
+            "name": "Matlab / Simulink",
+            "selected": false
+          },
+          {
+            "name": "Cisco Packet Tracer",
+            "selected": false
+          }
+        ]
+      },
+      "languageAndCommunication": {
+        "crossCulturalCommunication": [
+          {
+            "name": "English",
+            "selected": false
+          }
+        ]
+      }
+    },
+    "programming": [],
+    "teaching": [],
+    "communication": [],
+    "other": []
+  },
+  "cv": {
+    "uploaded": true,
+    "originalFileName": "Sasha_CV.pdf",
+    "storedFileName": "",
+    "filePath": "data\\uploads\\profile_cv\\20230031\\Sasha_CV.pdf",
+    "fileType": "",
+    "fileSizeKB": 0,
+    "uploadedAt": "2026-05-21"
+  },
+  "applicationSummary": {
+    "totalApplications": 0,
+    "pending": 0,
+    "underReview": 0,
+    "accepted": 0,
+    "rejected": 0
+  },
+  "dashboard": {
+    "profileCompletion": 67,
+    "onboardingCompleted": true
+  },
+  "permissions": {
+    "canEditOwnProfile": true,
+    "canUploadCV": true,
+    "canBrowseJobs": true,
+    "canApplyJob": true,
+    "canViewOwnApplications": true,
+    "canReviewApplication": false,
+    "canManageJob": false,
+    "canManageUsers": false
+  },
+  "meta": {
+    "createdAt": "2026-05-21T20:37:50.537689100",
+    "updatedAt": "2026-05-21T20:40:15.0475723",
+    "isDeleted": false,
+    "isActive": true
+  }
+}

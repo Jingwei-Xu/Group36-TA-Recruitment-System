@@ -1,0 +1,84 @@
+{
+  "applicationId": "app_000024",
+  "userId": "u_ta_20230006",
+  "studentId": "202305555",
+  "jobId": "job_CS101_2026_spring",
+  "jobSnapshot": {
+    "title": "Introduction to Programming TA",
+    "courseCode": "CS101",
+    "courseName": "Introduction to Programming",
+    "department": "Computer Science",
+    "instructorName": "Dr. Sarah Johnson",
+    "instructorEmail": "sarah.johnson@university.edu",
+    "deadline": "2026-03-25",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 10,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "mike",
+    "studentId": "202305555",
+    "email": "111@university.edu",
+    "phoneNumber": "18986245801",
+    "programMajor": "computer science",
+    "year": "3rd Year",
+    "gpa": 0.0
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Algorithms & Data Structures",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "Verilog",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Digital Logic Design",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "relevantExperience": "111",
+    "availability": "111",
+    "motivationCoverLetter": "1111"
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "EBU5606 Coursework brief 202526.pdf",
+      "storedFileName": "EBU5606 Coursework brief 202526.pdf",
+      "filePath": "C:\\Users\\35375\\Desktop\\version4_integrate-2(3)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230006\\EBU5606 Coursework brief 202526.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001"
+  },
+  "status": {
+    "current": "pending",
+    "label": "Pending",
+    "lastUpdated": "2026-05-18T17:55:26.5569149"
+  },
+  "review": {
+    "statusMessage": "Your application has been submitted and is waiting for review.",
+    "nextSteps": "Please wait for further updates from the department.",
+    "taConfirmationRequired": false
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1779098126556",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-05-18T17:55:26.558914",
+      "note": "Application submitted successfully."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-05-18T17:55:26.558914",
+    "updatedAt": "2026-05-18T17:55:26.558914",
+    "isDeleted": false
+  },
+  "isDraft": false
+}

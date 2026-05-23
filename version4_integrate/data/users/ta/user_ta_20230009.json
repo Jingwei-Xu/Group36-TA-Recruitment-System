@@ -1,0 +1,210 @@
+{
+  "skills": {
+    "proficiencyLevels": [
+      "Beginner",
+      "Intermediate",
+      "Advanced"
+    ],
+    "taSkillPool": {
+      "technicalSkills": {
+        "programmingAndSoftwareFundamentals": [
+          {
+            "name": "Java",
+            "selected": false
+          },
+          {
+            "name": "Python",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "C/C++",
+            "selected": false
+          },
+          {
+            "name": "SQL",
+            "selected": false
+          },
+          {
+            "name": "Algorithms \u0026 Data Structures",
+            "selected": false
+          },
+          {
+            "name": "Object-Oriented Programming (OOP)",
+            "selected": true,
+            "proficiency": "Advanced"
+          }
+        ],
+        "hardwareAndLogicDesign": [
+          {
+            "name": "VHDL",
+            "selected": false
+          },
+          {
+            "name": "Verilog",
+            "selected": false
+          },
+          {
+            "name": "Digital Logic Design",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "FPGA Development \u0026 Debugging",
+            "selected": false
+          }
+        ],
+        "embeddedSystemsAndLowLevelDevelopment": [
+          {
+            "name": "STM32 Development",
+            "selected": true,
+            "proficiency": "Beginner"
+          },
+          {
+            "name": "FreeRTOS",
+            "selected": false
+          },
+          {
+            "name": "Embedded C",
+            "selected": false
+          },
+          {
+            "name": "Hardware Driver Development",
+            "selected": true,
+            "proficiency": "Advanced"
+          }
+        ]
+      },
+      "engineeringAndTools": {
+        "professionalDevelopmentAndSimulationTools": [
+          {
+            "name": "Quartus Prime",
+            "selected": false
+          },
+          {
+            "name": "Keil5",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeIDE",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeMX",
+            "selected": false
+          },
+          {
+            "name": "CST Studio Suite",
+            "selected": false
+          },
+          {
+            "name": "Matlab / Simulink",
+            "selected": false
+          },
+          {
+            "name": "Cisco Packet Tracer",
+            "selected": true,
+            "proficiency": "Advanced"
+          }
+        ]
+      },
+      "languageAndCommunication": {
+        "crossCulturalCommunication": [
+          {
+            "name": "English",
+            "selected": true,
+            "proficiency": "Intermediate"
+          }
+        ]
+      }
+    },
+    "programming": [
+      {
+        "skillId": "",
+        "name": "Python",
+        "proficiency": "Intermediate"
+      },
+      {
+        "skillId": "",
+        "name": "Object-Oriented Programming (OOP)",
+        "proficiency": "Advanced"
+      }
+    ],
+    "teaching": [],
+    "communication": [
+      {
+        "skillId": "",
+        "name": "English",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "other": [
+      {
+        "skillId": "",
+        "name": "Cisco Packet Tracer",
+        "proficiency": "Advanced"
+      }
+    ]
+  },
+  "loginId": "20230009",
+  "role": "ta",
+  "cv": {
+    "uploaded": true,
+    "originalFileName": "cv.pdf",
+    "storedFileName": "cv.pdf",
+    "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230009\\cv.pdf",
+    "fileType": "pdf",
+    "fileSizeKB": 1342,
+    "uploadedAt": "2026-05-19T18:35:47.959282500"
+  },
+  "academic": {
+    "gpa": 0.0,
+    "completedCourses": []
+  },
+  "permissions": {
+    "canBrowseJobs": true,
+    "canApplyJob": true,
+    "canManageJob": false,
+    "canManageUsers": false,
+    "canViewOwnApplications": true,
+    "canUploadCV": true,
+    "canEditOwnProfile": true,
+    "canReviewApplication": false
+  },
+  "meta": {
+    "createdAt": "2026-04-11T17:00:23.723406900",
+    "isDeleted": false,
+    "isActive": true,
+    "updatedAt": "2026-05-19T18:35:47.9613118"
+  },
+  "profile": {
+    "fullName": "Jordan Taylor",
+    "studentId": "20250033",
+    "year": "2nd Year",
+    "programMajor": "Human-Computer Interaction",
+    "department": "",
+    "phoneNumber": "13111111111",
+    "address": "",
+    "shortBio": ""
+  },
+  "userId": "u_ta_20230009",
+  "account": {
+    "password": "QQ123456",
+    "lastLoginAt": "2026-04-11T17:00:23.723406900",
+    "email": "j.taylor@university.edu",
+    "passwordHash": "hashed_20250033",
+    "username": "20250033",
+    "status": "active"
+  },
+  "dashboard": {
+    "profileCompletion": 0,
+    "onboardingCompleted": true
+  },
+  "applicationSummary": {
+    "underReview": 0,
+    "rejected": 0,
+    "pending": 0,
+    "accepted": 0,
+    "totalApplications": 0
+  }
+}

@@ -1,0 +1,2 @@
+Main-Class: Authentication_Module.Main
+Class-Path: lib/gson-2.10.1.jar lib/json-simple-1.1.1.jar lib/jackson-databind-2.15.2.jar lib/jackson-core-2.15.2.jar lib/jackson-annotations-2.15.2.jar lib/flatlaf-3.4.1.jar

@@ -1,0 +1,109 @@
+{
+  "applicationId": "app_000004",
+  "userId": "u_ta_20230003",
+  "studentId": "20230003",
+  "jobId": "job_CS101_2026_spring",
+  "jobSnapshot": {
+    "title": "Introduction to Programming TA",
+    "courseCode": "CS101",
+    "courseName": "Introduction to Programming",
+    "department": "Computer Science",
+    "instructorName": "Dr. Sarah Johnson",
+    "deadline": "2026-03-25T23:59:59",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 10
+  },
+  "applicantSnapshot": {
+    "fullName": "Charlie Brown",
+    "studentId": "20230003",
+    "email": "charlie.brown@university.edu",
+    "phoneNumber": "(555) 345-6789",
+    "programMajor": "Mechanical Engineering",
+    "year": "4th Year",
+    "department": "Mechanical Engineering",
+    "gpa": 3.9
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Python",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Matlab / Simulink",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "relevantExperience": "Peer tutor for engineering courses.",
+    "availability": "Mon/Wed 1-3pm, Fri 2-4pm",
+    "motivationCoverLetter": "I believe my skills in programming and teaching would make me an excellent fit for this role."
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "Charlie_Brown_CV.pdf",
+      "storedFileName": "cv.pdf",
+      "filePath": "data/uploads/application_files/app_000004/cv.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001",
+    "assignedAdmin": "u_admin_001",
+    "reviewDepartment": "Computer Science",
+    "doubleCheckRecruitment": {
+      "enabled": true,
+      "version": 1,
+      "moDecision": {
+        "status": "rejected",
+        "decidedBy": "u_mo_001",
+        "decidedAt": "2026-04-11T22:02:15.560182100"
+      },
+      "taConfirmation": {
+        "status": "not_required"
+      },
+      "finalStatus": "rejected_by_mo"
+    }
+  },
+  "status": {
+    "current": "accepted",
+    "label": "Accepted",
+    "lastUpdated": "2026-05-19T15:13:47.1780705",
+    "updatedBy": "u_mo_001"
+  },
+  "review": {
+    "reviewerNotes": "Quick rejected from list",
+    "decision": "offer_pending",
+    "decisionReason": "Quick rejected from list",
+    "statusMessage": "You have accepted this TA position. Congratulations!",
+    "nextSteps": "Please wait for further instructions from the course instructor.",
+    "reviewedBy": "u_ta_20230003",
+    "reviewedAt": "2026-05-19T15:13:47.1780705",
+    "moDecision": "rejected",
+    "taConfirmationRequired": true,
+    "taConfirmationStatus": "pending"
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_001",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-03-18T10:34:50",
+      "updatedBy": "u_ta_20230003"
+    },
+    {
+      "timelineId": "tl_1779174827178",
+      "stepKey": "offer_accepted",
+      "stepLabel": "Offer Accepted",
+      "status": "completed",
+      "timestamp": "2026-05-19T15:13:47.1780705",
+      "note": "You accepted the TA offer."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-03-18T10:34:50",
+    "updatedAt": "2026-05-19T15:13:47.1780705",
+    "isDeleted": false
+  },
+  "isDraft": false
+}

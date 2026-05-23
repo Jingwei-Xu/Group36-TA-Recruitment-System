@@ -1,0 +1,205 @@
+{
+  "userId": "u_ta_20230003",
+  "loginId": "20230003",
+  "role": "ta",
+  "account": {
+    "username": "charliebrown",
+    "email": "charlie.brown@university.edu",
+    "password": "test1234",
+    "passwordHash": "hashed_password_here",
+    "status": "active",
+    "lastLoginAt": "2026-03-18T09:30:00"
+  },
+  "profile": {
+    "fullName": "Charlie Brown",
+    "studentId": "20230003",
+    "year": "4th Year",
+    "programMajor": "Mechanical Engineering",
+    "department": "Mechanical Engineering",
+    "phoneNumber": "(555) 345-6789",
+    "address": "789 Pine St, City, State, ZIP",
+    "shortBio": "Passionate about robotics and sustainable energy."
+  },
+  "academic": {
+    "gpa": 3.9,
+    "completedCourses": [
+      {
+        "courseCode": "ME101",
+        "courseName": "Introduction to Mechanical Engineering",
+        "grade": "A"
+      },
+      {
+        "courseCode": "ME201",
+        "courseName": "Fluid Mechanics",
+        "grade": "A"
+      }
+    ]
+  },
+  "skills": {
+    "proficiencyLevels": [
+      "Beginner",
+      "Intermediate",
+      "Advanced"
+    ],
+    "taSkillPool": {
+      "technicalSkills": {
+        "programmingAndSoftwareFundamentals": [
+          {
+            "name": "Java",
+            "selected": false
+          },
+          {
+            "name": "Python",
+            "selected": true,
+            "proficiency": "Advanced"
+          },
+          {
+            "name": "C/C++",
+            "selected": false
+          },
+          {
+            "name": "SQL",
+            "selected": false
+          },
+          {
+            "name": "Algorithms \u0026 Data Structures",
+            "selected": false
+          },
+          {
+            "name": "Object-Oriented Programming (OOP)",
+            "selected": false
+          }
+        ],
+        "hardwareAndLogicDesign": [
+          {
+            "name": "VHDL",
+            "selected": false
+          },
+          {
+            "name": "Verilog",
+            "selected": false
+          },
+          {
+            "name": "Digital Logic Design",
+            "selected": false
+          },
+          {
+            "name": "FPGA Development \u0026 Debugging",
+            "selected": false
+          }
+        ],
+        "embeddedSystemsAndLowLevelDevelopment": [
+          {
+            "name": "STM32 Development",
+            "selected": false
+          },
+          {
+            "name": "FreeRTOS",
+            "selected": false
+          },
+          {
+            "name": "Embedded C",
+            "selected": false
+          },
+          {
+            "name": "Hardware Driver Development",
+            "selected": false
+          }
+        ]
+      },
+      "engineeringAndTools": {
+        "professionalDevelopmentAndSimulationTools": [
+          {
+            "name": "Quartus Prime",
+            "selected": false
+          },
+          {
+            "name": "Keil5",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeIDE",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeMX",
+            "selected": false
+          },
+          {
+            "name": "CST Studio Suite",
+            "selected": false
+          },
+          {
+            "name": "Matlab / Simulink",
+            "selected": false
+          },
+          {
+            "name": "Cisco Packet Tracer",
+            "selected": false
+          }
+        ]
+      },
+      "languageAndCommunication": {
+        "crossCulturalCommunication": [
+          {
+            "name": "English",
+            "selected": true,
+            "proficiency": "Advanced"
+          }
+        ]
+      }
+    },
+    "programming": [
+      {
+        "skillId": "",
+        "name": "Python",
+        "proficiency": "Advanced"
+      }
+    ],
+    "teaching": [],
+    "communication": [
+      {
+        "skillId": "",
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "other": []
+  },
+  "cv": {
+    "uploaded": true,
+    "originalFileName": "charlie_brown_cv.docx",
+    "storedFileName": "",
+    "filePath": "data\\uploads\\profile_cv\\20230003\\charlie_brown_cv.docx",
+    "fileType": "",
+    "fileSizeKB": 0,
+    "uploadedAt": "2026-05-19"
+  },
+  "applicationSummary": {
+    "totalApplications": 1,
+    "pending": 0,
+    "underReview": 0,
+    "accepted": 1,
+    "rejected": 0
+  },
+  "dashboard": {
+    "profileCompletion": 90,
+    "onboardingCompleted": true
+  },
+  "permissions": {
+    "canEditOwnProfile": true,
+    "canUploadCV": true,
+    "canBrowseJobs": true,
+    "canApplyJob": true,
+    "canViewOwnApplications": true,
+    "canReviewApplication": false,
+    "canManageJob": false,
+    "canManageUsers": false
+  },
+  "meta": {
+    "createdAt": "2026-03-01T09:00:00",
+    "updatedAt": "2026-05-19T18:16:26.2236591",
+    "isDeleted": false,
+    "isActive": true
+  }
+}

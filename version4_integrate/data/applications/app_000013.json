@@ -1,0 +1,101 @@
+{
+  "applicationId" : "app_000013",
+  "userId" : "u_ta_20230001",
+  "studentId" : "20250033",
+  "jobId" : "job_SF001_2026_spring",
+  "jobSnapshot" : {
+    "title" : "software engineering",
+    "courseCode" : "SF001",
+    "courseName" : "software engineering",
+    "department" : "Computer Science",
+    "instructorName" : "",
+    "instructorEmail" : "mo@university.edu",
+    "deadline" : "2026-04-25",
+    "employmentType" : "Part-time TA",
+    "weeklyHours" : 10,
+    "locationMode" : "Hybrid",
+    "locationDetail" : ""
+  },
+  "applicantSnapshot" : {
+    "fullName" : "John Smith",
+    "studentId" : "20250033",
+    "email" : "j.taylor@university.edu",
+    "phoneNumber" : "13111111111",
+    "programMajor" : "Human-Computer Interaction",
+    "year" : "2nd Year",
+    "gpa" : 3.8
+  },
+  "applicationForm" : {
+    "relevantSkills" : [ {
+      "name" : "Python",
+      "proficiency" : "Intermediate"
+    }, {
+      "name" : "JavaScript",
+      "proficiency" : "Intermediate"
+    }, {
+      "name" : "Tutoring",
+      "proficiency" : "Intermediate"
+    }, {
+      "name" : "English",
+      "proficiency" : "Intermediate"
+    } ],
+    "relevantExperience" : "111",
+    "availability" : "1111",
+    "motivationCoverLetter" : "11111"
+  },
+  "attachments" : { },
+  "workflow" : {
+    "assignedMO" : "u_mo_001",
+    "doubleCheckRecruitment" : {
+      "enabled" : true,
+      "version" : 1,
+      "moDecision" : {
+        "status" : "pending",
+        "decidedBy" : "u_mo_001"
+      },
+      "taConfirmation" : {
+        "status" : "not_required"
+      },
+      "finalStatus" : "waiting_mo_review"
+    }
+  },
+  "status" : {
+    "current" : "rejected",
+    "label" : "Rejected",
+    "lastUpdated" : "2026-05-19T15:00:18.957344",
+    "updatedBy" : "u_mo_001"
+  },
+  "review" : {
+    "reviewerNotes" : "Quick approved from list",
+    "decision" : "rejected",
+    "decisionReason" : "Quick approved from list",
+    "statusMessage" : "You have accepted this TA position. Congratulations!",
+    "nextSteps" : "Please wait for further instructions from the course instructor.",
+    "reviewedBy" : "u_mo_001",
+    "reviewedAt" : "2026-05-19T15:00:18.957344",
+    "moDecision" : "pending",
+    "taConfirmationRequired" : false,
+    "taConfirmationStatus" : "not_required"
+  },
+  "timeline" : [ {
+    "timelineId" : "tl_1775966075237",
+    "stepKey" : "submitted",
+    "stepLabel" : "Application Submitted",
+    "status" : "completed",
+    "timestamp" : "2026-04-12T11:54:35.2393406",
+    "note" : "Application submitted successfully."
+  }, {
+    "timelineId" : "tl_1779087494007",
+    "stepKey" : "offer_accepted",
+    "stepLabel" : "Offer Accepted",
+    "status" : "completed",
+    "timestamp" : "2026-05-18T14:58:14.0078384",
+    "note" : "You accepted the TA offer."
+  } ],
+  "meta" : {
+    "submittedAt" : "2026-04-12T11:54:35.2393406",
+    "updatedAt" : "2026-05-18T14:58:14.0078384",
+    "isDeleted" : false
+  },
+  "isDraft" : false
+}

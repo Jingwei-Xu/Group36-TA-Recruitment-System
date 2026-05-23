@@ -1,0 +1,85 @@
+{
+  "applicationId" : "app_000025",
+  "userId" : "u_ta_20230006",
+  "studentId" : "202305555",
+  "jobId" : "job_2_2026_spring",
+  "jobSnapshot" : {
+    "title" : "1",
+    "courseCode" : "2",
+    "courseName" : "3",
+    "department" : "Computer Science",
+    "instructorName" : "",
+    "instructorEmail" : "mo@university.edu",
+    "deadline" : "2026-05-12",
+    "employmentType" : "Part-time TA",
+    "weeklyHours" : 15,
+    "locationMode" : "Hybrid",
+    "locationDetail" : ""
+  },
+  "applicantSnapshot" : {
+    "fullName" : "mike",
+    "studentId" : "202305555",
+    "email" : "111@university.edu",
+    "phoneNumber" : "18986245801",
+    "programMajor" : "computer science",
+    "year" : "3rd Year",
+    "gpa" : 0.0
+  },
+  "applicationForm" : {
+    "relevantSkills" : [ {
+      "name" : "Algorithms & Data Structures",
+      "proficiency" : "Beginner"
+    }, {
+      "name" : "Verilog",
+      "proficiency" : "Intermediate"
+    }, {
+      "name" : "Digital Logic Design",
+      "proficiency" : "Intermediate"
+    } ],
+    "relevantExperience" : "11111",
+    "availability" : "1111",
+    "motivationCoverLetter" : "11111"
+  },
+  "attachments" : {
+    "cv" : {
+      "originalFileName" : "EBU5606 Coursework brief 202526.pdf",
+      "storedFileName" : "EBU5606 Coursework brief 202526.pdf",
+      "filePath" : "C:\\Users\\35375\\Desktop\\version4_integrate-2(3)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230006\\EBU5606 Coursework brief 202526.pdf",
+      "fileType" : "pdf"
+    }
+  },
+  "workflow" : {
+    "assignedMO" : "u_mo_001"
+  },
+  "status" : {
+    "current" : "offer_pending",
+    "label" : "offer pending",
+    "lastUpdated" : "2026-05-19T00:32:36.883183100",
+    "updatedBy" : "u_mo_001"
+  },
+  "review" : {
+    "statusMessage" : "Your application has been submitted and is waiting for review.",
+    "nextSteps" : "Please wait for further updates from the department.",
+    "taConfirmationRequired" : true,
+    "decision" : "offer_pending",
+    "decisionReason" : "",
+    "reviewerNotes" : "",
+    "reviewedBy" : "u_mo_001",
+    "reviewedAt" : "2026-05-19T00:32:36.883183100",
+    "taConfirmationStatus" : "pending"
+  },
+  "timeline" : [ {
+    "timelineId" : "tl_1779100369778",
+    "stepKey" : "submitted",
+    "stepLabel" : "Application Submitted",
+    "status" : "completed",
+    "timestamp" : "2026-05-18T18:32:49.7791784",
+    "note" : "Application submitted successfully."
+  } ],
+  "meta" : {
+    "submittedAt" : "2026-05-18T18:32:49.7791784",
+    "updatedAt" : "2026-05-18T18:32:49.7791784",
+    "isDeleted" : false
+  },
+  "isDraft" : false
+}

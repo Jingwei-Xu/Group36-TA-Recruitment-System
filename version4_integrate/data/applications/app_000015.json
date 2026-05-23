@@ -1,0 +1,97 @@
+{
+  "applicationId": "app_000015",
+  "userId": "u_ta_20230014",
+  "studentId": "2023213322",
+  "jobId": "job_SF001_2026_spring",
+  "jobSnapshot": {
+    "title": "software engineering",
+    "courseCode": "SF001",
+    "courseName": "software engineering",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-25",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 10,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "kathy",
+    "studentId": "2023213322",
+    "email": "1111@qq.com",
+    "phoneNumber": "18986245801",
+    "programMajor": "Computer science",
+    "year": "2nd Year",
+    "gpa": 0.0
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Python",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "relevantExperience": "11",
+    "availability": "111",
+    "motivationCoverLetter": "111"
+  },
+  "attachments": {},
+  "workflow": {
+    "assignedMO": "u_mo_001",
+    "doubleCheckRecruitment": {
+      "enabled": true,
+      "version": 1,
+      "moDecision": {
+        "status": "pending",
+        "decidedBy": "u_mo_001"
+      },
+      "taConfirmation": {
+        "status": "not_required"
+      },
+      "finalStatus": "waiting_mo_review"
+    }
+  },
+  "status": {
+    "current": "accepted",
+    "label": "Accepted",
+    "lastUpdated": "2026-05-18T14:57:41.2309002",
+    "updatedBy": "u_mo_001"
+  },
+  "review": {
+    "reviewerNotes": "Quick approved from list",
+    "decision": "offer_pending",
+    "decisionReason": "Quick approved from list",
+    "statusMessage": "You have accepted this TA position. Congratulations!",
+    "nextSteps": "Please wait for further instructions from the course instructor.",
+    "reviewedBy": "u_ta_20230014",
+    "reviewedAt": "2026-05-18T14:57:41.2309002",
+    "moDecision": "pending",
+    "taConfirmationRequired": true,
+    "taConfirmationStatus": "pending"
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1775966430671",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-04-12T12:00:30.6714197",
+      "note": "Application submitted successfully."
+    },
+    {
+      "timelineId": "tl_1779087461230",
+      "stepKey": "offer_accepted",
+      "stepLabel": "Offer Accepted",
+      "status": "completed",
+      "timestamp": "2026-05-18T14:57:41.2309002",
+      "note": "You accepted the TA offer."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-04-12T12:00:30.6714197",
+    "updatedAt": "2026-05-18T14:57:41.2309002",
+    "isDeleted": false
+  },
+  "isDraft": false
+}
