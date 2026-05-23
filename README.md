@@ -395,30 +395,94 @@ data
 
 ## How to Run the System
 
-## How to Run the System
-
 1. Go to the **Releases** section of this repository and download the required version of the system.
 
-2. Extract the release package to a local folder.  
-   Please keep the `.jar` file, data files, and related resource folders in the same structure as provided in the release package.
+2. Extract the release package to a local folder.
+
+   Please keep the `.jar` file, data files, configuration files, and related resource folders in the same structure as provided in the release package.
 
 3. Make sure that **Java** is installed on your computer.
 
-4. Open a terminal (or command prompt), navigate to the folder containing the `.jar` file, and run the system with:
+4. Open a terminal or command prompt and navigate to the folder containing the `.jar` file.
 
-   ```bash
-   java -jar <version_file>.jar
+5. Run the corresponding version using the following command.
 
- 5. For different releases, replace <version_file> with the corresponding file name.
+### Version 1
 
-    ```bash
-    java -jar version1_integrate.jar
-    java -jar version2_integrate.jar
-    java -jar version3_integrate.jar
-    java -jar version4_integrate.jar
-    
- 6. After launching, the system window should open automatically. You can then log in with the available test accounts and data included in the release package.
+```bash
+java -jar version1_integrate.jar
+```
 
+### Version 2
+
+```bash
+java -cp version2_integrate.jar Authentication_Module.Main
+```
+
+### Version 3
+
+```bash
+java -jar version3_integrate.jar
+```
+
+### Version 4
+
+Before running Version 4, set the ARK API key in the current command prompt session.
+
+The API key can be found in the release package under:
+
+```text
+config/ai_config.txt
+```
+
+Then run:
+
+```bash
+set ARK_API_KEY=<your_ark_api_key>
+java -jar version4_integrate.jar
+```
+
+6. After launching, the system window should open automatically.
+
+7. You can log in with the available test accounts included in the release package.
+
+   The test user information can be found under the following folder:
+
+```text
+data/users/
+```
+
+   Inside this folder, there are several user-type folders, such as:
+
+```text
+admin/
+mo/
+ta/
+```
+
+   You can open any `.json` file inside these folders and use the `username` and `password` fields as the login credentials.
+
+   For example, a user JSON file may contain fields similar to the following:
+
+```json
+"account": {
+    "username": "systemadmin",
+    "email": "admin@university.edu",
+    "passwordHash": "hashed_password_here",
+    "password": "test1234",
+    "status": "active",
+    "lastLoginAt": "2026-03-18T08:30:00"
+}
+```
+
+   In this example, you can use the following credentials to log in:
+
+```text
+Username: systemadmin
+Password: test1234
+```
+
+8. You can also register a new account in the system and use it for testing.
 
 
 ## Future Improvements
