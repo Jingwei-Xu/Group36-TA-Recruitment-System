@@ -337,7 +337,23 @@ data
 | 2026-4-6 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module |Ensure the correct classification of skills added in the login guide interface, and add a status bar for viewing CV upload status |
 | 2026-4-8 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module |Fix some known bugs in the TA profile module and optimize the overall UI |
 | 2026-4-8 | @Jingwei-Xu | reflection |Organize the issues and reflections in version 1 |
-| 2026-4-11 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module |Merge the MO module with the merged TA, admin, login and registration interfaces, test the functionality of each interface, unify the overall UI style, and modify bugs |
+| 2026-4-11 | @Jingwei-Xu | versiom |Merge the MO module with the merged TA, admin, login and registration interfaces, test the functionality of each interface, unify the overall UI style, and modify bugs |
+| 2026-4-12 | @Jingwei-Xu | version |Test the functionality of software version 2 and modify the corresponding bugs, then upload the final integrated version of version 2 |
+| 2026-4-17 | @Jingwei-Xu | reflection |Collect feedback and improvement suggestions from end users, and organize the reflection document for version 2 |
+| 2026-4-20 | @Jingwei-Xu | data | Add storage folders that match the new features of version 3, add TA and MO skill pools, ensure data storage paths, and ensure that new user profile data files are created in a unified format |
+| 2026-4-21 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Redesign the proffile page UI and add a skill pool for users to choose from |
+| 2026-4-23 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Adjust the layout of the profile module page |
+| 2026-4-26 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Integrate the TA profile interface and complete the initial integration of the entire software version 3 |
+| 2026-4-28 | @Jingwei-Xu | version | Test the functionality of software version 2 and modify the corresponding bugs, then upload the final integrated version of version 3 |
+| 2026-5-7 | @Jingwei-Xu | reflection |upload the issues and reflections in version 2 |
+| 2026-5-7 | @Jingwei-Xu | reflection |Organize the issues and reflections in version 3 |
+| 2026-5-8 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Update the UI design for TA dashboard, edit profile/skills, and manage CV interface |
+| 2026-5-9 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Update the UI design of the first-time login guidance interface for new users |
+| 2026-5-10 | @Jingwei-Xu | Jingwei-Xu/TA_profile_module | Integrate various functional interfaces of the system and test whether the functions are affected by new updates |
+| 2026-5-10 | @Jingwei-Xu | version | Unified software with a refreshed UI style |
+| 2026-5-23 | @Jingwei-Xu | version | Update the final version of version 4 |
+
+
 
 
 
