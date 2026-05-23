@@ -1,0 +1,100 @@
+{
+  "applicationId": "app_000034",
+  "userId": "u_ta_20230009",
+  "studentId": "20250033",
+  "jobId": "job_SF001_2026_spring",
+  "jobSnapshot": {
+    "title": "software engineering",
+    "courseCode": "SF001",
+    "courseName": "software engineering",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-25",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 10,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "Jordan Taylor",
+    "studentId": "20250033",
+    "email": "j.taylor@university.edu",
+    "phoneNumber": "13111111111",
+    "programMajor": "Human-Computer Interaction",
+    "year": "2nd Year",
+    "gpa": 0.0
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Python",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Object-Oriented Programming (OOP)",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Digital Logic Design",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "STM32 Development",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "Hardware Driver Development",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Cisco Packet Tracer",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "English",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "relevantExperience": "I once worked as a teaching assistant",
+    "availability": "Tuesday to Friday: 10:00 - 16:00",
+    "motivationCoverLetter": "I hope to deepen my understanding of relevant knowledge and gain more experience interacting with students while working as a teaching assistant for this course."
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "cv.pdf",
+      "storedFileName": "cv.pdf",
+      "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230009\\cv.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001"
+  },
+  "status": {
+    "current": "pending",
+    "label": "Pending",
+    "lastUpdated": "2026-05-19T18:35:47.9623136"
+  },
+  "review": {
+    "statusMessage": "Your application has been submitted and is waiting for review.",
+    "nextSteps": "Please wait for further updates from the department.",
+    "taConfirmationRequired": false
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1779186947962",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-05-19T18:35:47.9623136",
+      "note": "Application submitted successfully."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-05-19T18:35:47.9623136",
+    "updatedAt": "2026-05-19T18:35:47.9623136",
+    "isDeleted": false
+  },
+  "isDraft": false
+}

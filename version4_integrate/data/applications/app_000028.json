@@ -1,0 +1,100 @@
+{
+  "applicationId": "app_000028",
+  "userId": "u_ta_20230004",
+  "studentId": "20230004",
+  "jobId": "job_SF001_2026_spring",
+  "jobSnapshot": {
+    "title": "software engineering",
+    "courseCode": "SF001",
+    "courseName": "software engineering",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-25",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 10,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "Lucy Liu",
+    "studentId": "20230004",
+    "email": "lucy.liu@university.edu",
+    "phoneNumber": "(555) 456-7890",
+    "programMajor": "Civil Engineering",
+    "year": "1st Year",
+    "gpa": 3.7
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "SQL",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Algorithms \u0026 Data Structures",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Verilog",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Hardware Driver Development",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "Quartus Prime",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "CST Studio Suite",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "relevantExperience": "I once worked as a teaching assistant.",
+    "availability": "Tuesday to Friday: 10:00 - 16:00",
+    "motivationCoverLetter": "I hope to deepen my understanding of relevant knowledge and gain more experience interacting with students while working as a teaching assistant for this course."
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "cv.pdf",
+      "storedFileName": "cv.pdf",
+      "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230004\\cv.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001"
+  },
+  "status": {
+    "current": "pending",
+    "label": "Pending",
+    "lastUpdated": "2026-05-19T18:23:10.7494458"
+  },
+  "review": {
+    "statusMessage": "Your application has been submitted and is waiting for review.",
+    "nextSteps": "Please wait for further updates from the department.",
+    "taConfirmationRequired": false
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1779186190749",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-05-19T18:23:10.7494458",
+      "note": "Application submitted successfully."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-05-19T18:23:10.7494458",
+    "updatedAt": "2026-05-19T18:23:10.7494458",
+    "isDeleted": false
+  },
+  "isDraft": false
+}

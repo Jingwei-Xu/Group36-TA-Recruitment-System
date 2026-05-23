@@ -1,0 +1,88 @@
+{
+  "applicationId": "app_000026",
+  "userId": "u_ta_20230002",
+  "studentId": "20230002",
+  "jobId": "job_SF001_2026_spring",
+  "jobSnapshot": {
+    "title": "software engineering",
+    "courseCode": "SF001",
+    "courseName": "software engineering",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-25",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 10,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "Jane Doe",
+    "studentId": "20230002",
+    "email": "jane.doe@university.edu",
+    "phoneNumber": "(555) 234-5678",
+    "programMajor": "Electrical Engineering",
+    "year": "2nd Year",
+    "gpa": 3.6
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Python",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "C/C++",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Digital Logic Design",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "relevantExperience": "I have TA eperience in English class.",
+    "availability": "Monday to Friday: 10:00 - 16:00",
+    "motivationCoverLetter": "I want to learn from the process."
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "1.docx",
+      "storedFileName": "1.docx",
+      "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230002\\1.docx",
+      "fileType": "docx"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001"
+  },
+  "status": {
+    "current": "pending",
+    "label": "Pending",
+    "lastUpdated": "2026-05-19T17:56:21.3673652"
+  },
+  "review": {
+    "statusMessage": "Your application has been submitted and is waiting for review.",
+    "nextSteps": "Please wait for further updates from the department.",
+    "taConfirmationRequired": false
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1779184581367",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-05-19T17:56:21.3673652",
+      "note": "Application submitted successfully."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-05-19T17:56:21.3673652",
+    "updatedAt": "2026-05-19T17:56:21.3673652",
+    "isDeleted": false
+  },
+  "isDraft": false
+}

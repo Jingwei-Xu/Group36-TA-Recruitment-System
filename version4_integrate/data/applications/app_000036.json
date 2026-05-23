@@ -1,0 +1,100 @@
+{
+  "applicationId": "app_000036",
+  "userId": "u_ta_20230018",
+  "studentId": "2023218888",
+  "jobId": "job_CS111_2026_spring",
+  "jobSnapshot": {
+    "title": "software TA",
+    "courseCode": "CS111",
+    "courseName": "software engineering",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-26",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 60,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "Sasha",
+    "studentId": "2023218888",
+    "email": "2023218888@bupt.cn",
+    "phoneNumber": "13245674567",
+    "programMajor": "AI",
+    "year": "3rd Year",
+    "gpa": 0.0
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "SQL",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Object-Oriented Programming (OOP)",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "VHDL",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "Embedded C",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "Matlab / Simulink",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "Cisco Packet Tracer",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "English",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "relevantExperience": "11111",
+    "availability": "1111111",
+    "motivationCoverLetter": "111111111"
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "Sasha_CV.pdf",
+      "storedFileName": "Sasha_CV.pdf",
+      "filePath": "C:\\Users\\HUAWEI\\Desktop\\version4_integrate-2\\data\\uploads\\profile_cv\\20230018\\Sasha_CV.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001"
+  },
+  "status": {
+    "current": "pending",
+    "label": "Pending",
+    "lastUpdated": "2026-05-21T23:30:47.4041897"
+  },
+  "review": {
+    "statusMessage": "Your application has been submitted and is waiting for review.",
+    "nextSteps": "Please wait for further updates from the department.",
+    "taConfirmationRequired": false
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1779377447404",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-05-21T23:30:47.4061882",
+      "note": "Application submitted successfully."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-05-21T23:30:47.4061882",
+    "updatedAt": "2026-05-21T23:30:47.4061882",
+    "isDeleted": false
+  },
+  "isDraft": false
+}

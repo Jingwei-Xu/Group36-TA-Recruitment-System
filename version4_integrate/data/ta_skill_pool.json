@@ -1,0 +1,81 @@
+{
+  "proficiencyLevels": ["Beginner", "Intermediate", "Advanced"],
+  "groups": [
+    {
+      "title": "Technical Skills",
+      "description": "Select skills and set your proficiency level for each competency",
+      "iconLabel": "</>",
+      "subGroups": [
+        {
+          "poolKey": "programmingAndSoftwareFundamentals",
+          "parentPool": "technicalSkills",
+          "title": "Programming Languages",
+          "skills": [
+            "Java",
+            "Python",
+            "C/C++",
+            "SQL",
+            "Algorithms & Data Structures",
+            "Object-Oriented Programming (OOP)"
+          ]
+        },
+        {
+          "poolKey": "hardwareAndLogicDesign",
+          "parentPool": "technicalSkills",
+          "title": "Hardware & Logic Design",
+          "skills": [
+            "VHDL",
+            "Verilog",
+            "Digital Logic Design",
+            "FPGA Development & Debugging"
+          ]
+        },
+        {
+          "poolKey": "embeddedSystemsAndLowLevelDevelopment",
+          "parentPool": "technicalSkills",
+          "title": "Embedded Systems",
+          "skills": [
+            "STM32 Development",
+            "FreeRTOS",
+            "Embedded C",
+            "Hardware Driver Development"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Software & Engineering Tools",
+      "description": "Select tools and set your proficiency level for each one",
+      "iconLabel": "T",
+      "subGroups": [
+        {
+          "poolKey": "professionalDevelopmentAndSimulationTools",
+          "parentPool": "engineeringAndTools",
+          "title": "Professional Development & Simulation Tools",
+          "skills": [
+            "Quartus Prime",
+            "Keil5",
+            "STM32CubeIDE",
+            "STM32CubeMX",
+            "CST Studio Suite",
+            "Matlab / Simulink",
+            "Cisco Packet Tracer"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Language Proficiency",
+      "description": "Set your English language proficiency level",
+      "iconLabel": "L",
+      "subGroups": [
+        {
+          "poolKey": "crossCulturalCommunication",
+          "parentPool": "languageAndCommunication",
+          "title": "English",
+          "skills": ["English"]
+        }
+      ]
+    }
+  ]
+}

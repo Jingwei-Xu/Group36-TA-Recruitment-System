@@ -1,0 +1,100 @@
+{
+  "applicationId": "app_000029",
+  "userId": "u_ta_20230005",
+  "studentId": "2023213322",
+  "jobId": "job_E200_2026_spring",
+  "jobSnapshot": {
+    "title": "Math TA",
+    "courseCode": "E200",
+    "courseName": "MAthmatics",
+    "department": "Computer Science",
+    "instructorName": "",
+    "instructorEmail": "mo@university.edu",
+    "deadline": "2026-04-26",
+    "employmentType": "Part-time TA",
+    "weeklyHours": 5,
+    "locationMode": "Hybrid",
+    "locationDetail": ""
+  },
+  "applicantSnapshot": {
+    "fullName": "Iris",
+    "studentId": "2023213322",
+    "email": "Iris@university.edu",
+    "phoneNumber": "18986245801",
+    "programMajor": "Computer science",
+    "year": "3rd Year",
+    "gpa": 0.0
+  },
+  "applicationForm": {
+    "relevantSkills": [
+      {
+        "name": "Java",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "Object-Oriented Programming (OOP)",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "VHDL",
+        "proficiency": "Advanced"
+      },
+      {
+        "name": "FPGA Development \u0026 Debugging",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "Keil5",
+        "proficiency": "Beginner"
+      },
+      {
+        "name": "STM32CubeMX",
+        "proficiency": "Intermediate"
+      },
+      {
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "relevantExperience": "I once worked as a teaching assistant",
+    "availability": "Tuesday to Friday: 10:00 - 16:00",
+    "motivationCoverLetter": "I hope to deepen my understanding of relevant knowledge and gain more experience interacting with students while working as a teaching assistant for this course."
+  },
+  "attachments": {
+    "cv": {
+      "originalFileName": "Iris_cv.pdf",
+      "storedFileName": "Iris_cv.pdf",
+      "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230005\\Iris_cv.pdf",
+      "fileType": "pdf"
+    }
+  },
+  "workflow": {
+    "assignedMO": "u_mo_001"
+  },
+  "status": {
+    "current": "pending",
+    "label": "Pending",
+    "lastUpdated": "2026-05-19T18:25:35.1184923"
+  },
+  "review": {
+    "statusMessage": "Your application has been submitted and is waiting for review.",
+    "nextSteps": "Please wait for further updates from the department.",
+    "taConfirmationRequired": false
+  },
+  "timeline": [
+    {
+      "timelineId": "tl_1779186335118",
+      "stepKey": "submitted",
+      "stepLabel": "Application Submitted",
+      "status": "completed",
+      "timestamp": "2026-05-19T18:25:35.1184923",
+      "note": "Application submitted successfully."
+    }
+  ],
+  "meta": {
+    "submittedAt": "2026-05-19T18:25:35.1184923",
+    "updatedAt": "2026-05-19T18:25:35.1184923",
+    "isDeleted": false
+  },
+  "isDraft": false
+}
