@@ -565,15 +565,18 @@ data
 | 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Complete the code design for the login function |
 | 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Complete the code design for the register function |
 | 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Design the data storage and reading/writing functions |
-| 2026-03-19 | @djwcb666 | Yifan-Lang/Login_prototype | Design the data storage and reading/writing functions |
 | 2026-03-24 | @djwcb666 | Yifan-Lang/login-register | Complete the front-end design of the login and registration pages |
 | 2026-03-26 | @djwcb666 | Yifan-Lang/login-register | Complete the design of the welcome page |
 | 2026-04-4 | @djwcb666 | Yifan-Lang/login-register | Sort out the problems existing in the front-end page |
 | 2026-04-9 | @djwcb666 | Yifan-Lang/login-register | Improve the logic of the registration interface |
 | 2026-04-10 | @djwcb666 | Yifan-Lang/login-register | Re-design all the front-end interfaces |
-
-
-
+| 2026-04-18 | @djwcb666 | Yifan-Lang/login-register | Prohibit ordinary users from registering the "admin" account |
+| 2026-04-24 | @djwcb666 | Yifan-Lang/login-register | Re-design the UI of the homepage |
+| 2026-05-10 | @djwcb666 | Yifan-Lang/login-register | Account status check upon login |
+| 2026-05-14 | @djwcb666 | Yifan-Lang/login-register | Add the function of detecting the first-time login of the account |
+| 2026-05-15 | @djwcb666 | Yifan-Lang/login-register | Open application for admin account |
+| 2026-05-17 | @djwcb666 | Yifan-Lang/login-register | Optimize the error message displayed when login fails |
+| 2026-05-18 | @djwcb666 | Yifan-Lang/login-register | Design the information filling page for the first login of the MO account |
 
 ## Future Improvements
 
