@@ -1,0 +1,43 @@
+{
+  "userId": "u_admin_003",
+  "loginId": "admin003",
+  "role": "admin",
+  "account": {
+    "username": "testadmin",
+    "email": "testadmin@university.edu",
+    "passwordHash": "hashed_testadmin",
+    "password": "test1234",
+    "status": "PENDING",
+    "lastLoginAt": "2026-05-23T15:34:26.880498100"
+  },
+  "profile": {
+    "fullName": "testadmin",
+    "staffId": "ADMIN003",
+    "phoneNumber": ""
+  },
+  "permissions": {
+    "canEditOwnProfile": true,
+    "canCreateJob": true,
+    "canEditAnyJob": true,
+    "canDeleteAnyJob": true,
+    "canPublishAnyJob": true,
+    "canViewAllJobs": true,
+    "canReviewApplication": true,
+    "canUpdateApplicationStatus": true,
+    "canViewAllApplications": true,
+    "canManageUsers": true,
+    "canAssignMO": true,
+    "canViewSystemStatistics": true
+  },
+  "dashboard": {
+    "totalUsers": 0,
+    "totalJobs": 0,
+    "totalApplications": 0
+  },
+  "meta": {
+    "createdAt": "2026-05-23T15:34:26.880498100",
+    "updatedAt": "2026-05-23T15:34:26.880498100",
+    "isDeleted": false,
+    "isActive": true
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "skills": {
+    "proficiencyLevels": [
+      "Beginner",
+      "Intermediate",
+      "Advanced"
+    ],
+    "taSkillPool": {
+      "technicalSkills": {
+        "programmingAndSoftwareFundamentals": [
+          {
+            "name": "Java",
+            "selected": false
+          },
+          {
+            "name": "Python",
+            "selected": false
+          },
+          {
+            "name": "C/C++",
+            "selected": false
+          },
+          {
+            "name": "SQL",
+            "selected": false
+          },
+          {
+            "name": "Algorithms \u0026 Data Structures",
+            "selected": false
+          },
+          {
+            "name": "Object-Oriented Programming (OOP)",
+            "selected": false
+          }
+        ],
+        "hardwareAndLogicDesign": [
+          {
+            "name": "VHDL",
+            "selected": false
+          },
+          {
+            "name": "Verilog",
+            "selected": false
+          },
+          {
+            "name": "Digital Logic Design",
+            "selected": false
+          },
+          {
+            "name": "FPGA Development \u0026 Debugging",
+            "selected": false
+          }
+        ],
+        "embeddedSystemsAndLowLevelDevelopment": [
+          {
+            "name": "STM32 Development",
+            "selected": false
+          },
+          {
+            "name": "FreeRTOS",
+            "selected": false
+          },
+          {
+            "name": "Embedded C",
+            "selected": false
+          },
+          {
+            "name": "Hardware Driver Development",
+            "selected": false
+          }
+        ]
+      },
+      "engineeringAndTools": {
+        "professionalDevelopmentAndSimulationTools": [
+          {
+            "name": "Quartus Prime",
+            "selected": false
+          },
+          {
+            "name": "Keil5",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeIDE",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeMX",
+            "selected": false
+          },
+          {
+            "name": "CST Studio Suite",
+            "selected": false
+          },
+          {
+            "name": "Matlab / Simulink",
+            "selected": false
+          },
+          {
+            "name": "Cisco Packet Tracer",
+            "selected": false
+          }
+        ]
+      },
+      "languageAndCommunication": {
+        "crossCulturalCommunication": [
+          {
+            "name": "English",
+            "selected": true,
+            "proficiency": "Intermediate"
+          }
+        ]
+      }
+    },
+    "programming": [],
+    "teaching": [],
+    "communication": [
+      {
+        "skillId": "",
+        "name": "English",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "other": []
+  },
+  "loginId": "20230012",
+  "role": "ta",
+  "cv": {
+    "uploaded": true,
+    "originalFileName": "cv.docx",
+    "storedFileName": "",
+    "filePath": "data\\uploads\\profile_cv\\20230012\\cv.docx",
+    "fileType": "",
+    "fileSizeKB": 0,
+    "uploadedAt": "2026-05-19"
+  },
+  "academic": {
+    "gpa": 0.0,
+    "completedCourses": []
+  },
+  "permissions": {
+    "canBrowseJobs": true,
+    "canApplyJob": true,
+    "canManageJob": false,
+    "canManageUsers": false,
+    "canViewOwnApplications": true,
+    "canUploadCV": true,
+    "canEditOwnProfile": true,
+    "canReviewApplication": false
+  },
+  "meta": {
+    "createdAt": "2026-04-11T19:34:47.603649400",
+    "isDeleted": false,
+    "isActive": true,
+    "updatedAt": "2026-05-19T18:41:23.5996926"
+  },
+  "profile": {
+    "fullName": "Marcus Garcia",
+    "studentId": "20230124",
+    "year": "2nd Year",
+    "programMajor": "Mathematics",
+    "department": "",
+    "phoneNumber": "13241111111",
+    "address": "",
+    "shortBio": ""
+  },
+  "userId": "u_ta_20230012",
+  "account": {
+    "password": "QQ123456",
+    "lastLoginAt": "2026-04-11T19:34:47.603649400",
+    "email": "marcus.garcia@university.edu",
+    "passwordHash": "hashed_20230124",
+    "username": "20230124",
+    "status": "active"
+  },
+  "dashboard": {
+    "profileCompletion": 100,
+    "onboardingCompleted": true
+  },
+  "applicationSummary": {
+    "underReview": 0,
+    "rejected": 0,
+    "pending": 0,
+    "accepted": 0,
+    "totalApplications": 0
+  }
+}

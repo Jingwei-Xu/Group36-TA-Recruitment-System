@@ -1,0 +1,226 @@
+{
+  "userId": "u_ta_20230004",
+  "loginId": "20230004",
+  "role": "ta",
+  "account": {
+    "username": "lucyliu",
+    "email": "lucy.liu@university.edu",
+    "passwordHash": "hashed_password_here",
+    "password": "test1234",
+    "status": "active",
+    "lastLoginAt": "2026-03-18T11:15:00"
+  },
+  "profile": {
+    "fullName": "Lucy Liu",
+    "studentId": "20230004",
+    "year": "1st Year",
+    "programMajor": "Civil Engineering",
+    "department": "Civil Engineering",
+    "phoneNumber": "(555) 456-7890",
+    "address": "101 Birch St, City, State, ZIP",
+    "shortBio": "Eager to contribute to sustainable infrastructure development."
+  },
+  "academic": {
+    "gpa": 3.7,
+    "completedCourses": [
+      {
+        "courseCode": "CE101",
+        "courseName": "Introduction to Civil Engineering",
+        "grade": "B"
+      },
+      {
+        "courseCode": "CE201",
+        "courseName": "Material Science",
+        "grade": "A-"
+      }
+    ]
+  },
+  "skills": {
+    "proficiencyLevels": [
+      "Beginner",
+      "Intermediate",
+      "Advanced"
+    ],
+    "taSkillPool": {
+      "technicalSkills": {
+        "programmingAndSoftwareFundamentals": [
+          {
+            "name": "Java",
+            "selected": false
+          },
+          {
+            "name": "Python",
+            "selected": false
+          },
+          {
+            "name": "C/C++",
+            "selected": false
+          },
+          {
+            "name": "SQL",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "Algorithms \u0026 Data Structures",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "Object-Oriented Programming (OOP)",
+            "selected": false
+          }
+        ],
+        "hardwareAndLogicDesign": [
+          {
+            "name": "VHDL",
+            "selected": false
+          },
+          {
+            "name": "Verilog",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "Digital Logic Design",
+            "selected": false
+          },
+          {
+            "name": "FPGA Development \u0026 Debugging",
+            "selected": false
+          }
+        ],
+        "embeddedSystemsAndLowLevelDevelopment": [
+          {
+            "name": "STM32 Development",
+            "selected": false
+          },
+          {
+            "name": "FreeRTOS",
+            "selected": false
+          },
+          {
+            "name": "Embedded C",
+            "selected": false
+          },
+          {
+            "name": "Hardware Driver Development",
+            "selected": true,
+            "proficiency": "Beginner"
+          }
+        ]
+      },
+      "engineeringAndTools": {
+        "professionalDevelopmentAndSimulationTools": [
+          {
+            "name": "Quartus Prime",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "Keil5",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeIDE",
+            "selected": false
+          },
+          {
+            "name": "STM32CubeMX",
+            "selected": false
+          },
+          {
+            "name": "CST Studio Suite",
+            "selected": true,
+            "proficiency": "Intermediate"
+          },
+          {
+            "name": "Matlab / Simulink",
+            "selected": false
+          },
+          {
+            "name": "Cisco Packet Tracer",
+            "selected": false
+          }
+        ]
+      },
+      "languageAndCommunication": {
+        "crossCulturalCommunication": [
+          {
+            "name": "English",
+            "selected": true,
+            "proficiency": "Advanced"
+          }
+        ]
+      }
+    },
+    "programming": [
+      {
+        "skillId": "",
+        "name": "SQL",
+        "proficiency": "Intermediate"
+      },
+      {
+        "skillId": "",
+        "name": "Algorithms \u0026 Data Structures",
+        "proficiency": "Intermediate"
+      }
+    ],
+    "teaching": [],
+    "communication": [
+      {
+        "skillId": "",
+        "name": "English",
+        "proficiency": "Advanced"
+      }
+    ],
+    "other": [
+      {
+        "skillId": "",
+        "name": "Quartus Prime",
+        "proficiency": "Intermediate"
+      },
+      {
+        "skillId": "",
+        "name": "CST Studio Suite",
+        "proficiency": "Intermediate"
+      }
+    ]
+  },
+  "cv": {
+    "uploaded": true,
+    "originalFileName": "cv.pdf",
+    "storedFileName": "cv.pdf",
+    "filePath": "D:\\Code\\Program\\EBU6304\\I4\\version4_integrate-2(8)\\version4_integrate-2\\data\\uploads\\profile_cv\\20230004\\cv.pdf",
+    "fileType": "pdf",
+    "fileSizeKB": 1342,
+    "uploadedAt": "2026-05-19T18:23:10.749445800"
+  },
+  "applicationSummary": {
+    "totalApplications": 0,
+    "pending": 0,
+    "underReview": 0,
+    "accepted": 0,
+    "rejected": 0
+  },
+  "dashboard": {
+    "profileCompletion": 60,
+    "onboardingCompleted": true
+  },
+  "permissions": {
+    "canEditOwnProfile": true,
+    "canUploadCV": true,
+    "canBrowseJobs": true,
+    "canApplyJob": true,
+    "canViewOwnApplications": true,
+    "canReviewApplication": false,
+    "canManageJob": false,
+    "canManageUsers": false
+  },
+  "meta": {
+    "createdAt": "2026-03-01T09:00:00",
+    "updatedAt": "2026-05-19T18:23:10.7494458",
+    "isDeleted": false,
+    "isActive": true
+  }
+}
